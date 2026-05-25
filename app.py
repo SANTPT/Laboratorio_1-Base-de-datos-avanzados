@@ -550,7 +550,7 @@ def insertar_dato():
             ref_trabajo = data.get("ref_trabajo")
             nombre = data.get("nombre", "").strip()
             apellidos = data.get("apellidos", "").strip()
-            email = data.get("email", "").strip().upper()
+            email = data.get("email", "").strip().lower()
             telefono = data.get("telefono", "").strip()
             fecha = data.get("fecha_contratacion", "").strip()
             salario = data.get("salario", "").strip()
@@ -571,8 +571,8 @@ def insertar_dato():
                 if emp.findtext("email") == email:
                     return jsonify({"success": False, "error": f"El email '{email}' ya pertenece a otro empleado."})
                     
-            if not re.match(r"^[A-Z]{3,8}$", email):
-                return jsonify({"success": False, "error": "El email no cumple con la restricción XSD [A-Z]{3,8} (de 3 a 8 letras mayúsculas, sin números)."})
+            if not re.match(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$", email):
+                return jsonify({"success": False, "error": "El email no cumple con la restricción XSD (ejemplo: usuario@correo.com)."})
                 
             try:
                 float(salario)
@@ -841,7 +841,7 @@ def actualizar_dato():
             ref_trabajo = data.get("ref_trabajo")
             nombre = data.get("nombre", "").strip()
             apellidos = data.get("apellidos", "").strip()
-            email = data.get("email", "").strip().upper()
+            email = data.get("email", "").strip().lower()
             telefono = data.get("telefono", "").strip()
             fecha = data.get("fecha_contratacion", "").strip()
             salario = data.get("salario", "").strip()
@@ -855,8 +855,8 @@ def actualizar_dato():
                 if emp.get("id") != str(record_id) and emp.findtext("email") == email:
                     return jsonify({"success": False, "error": f"El email '{email}' ya está asignado a otro empleado."})
                     
-            if not re.match(r"^[A-Z]{3,8}$", email):
-                return jsonify({"success": False, "error": "El email debe ser de 3 a 8 letras mayúsculas."})
+            if not re.match(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$", email):
+                return jsonify({"success": False, "error": "El email debe cumplir con el formato estándar (ejemplo: usuario@correo.com)."})
                 
             try:
                 float(salario)

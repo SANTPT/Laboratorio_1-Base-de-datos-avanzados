@@ -4,35 +4,105 @@ Este proyecto implementa un sistema avanzado de procesamiento y base de datos XM
 
 ---
 
-## Estructura y Árbol del Proyecto
+##  Estructura y Árbol del Proyecto
 
 A continuación se detalla la estructura física del workspace del proyecto:
 
 ```text
 Trabajo base de dato avanzado/
-├── data/
-│   ├── esquemas_hr.xml            
-│   └── esquemas_hr.xsd            
-├── queries/
-│   ├── consulta_empleados_dpto.xq 
-│   ├── consulta_historial_completo.xq 
-│   ├── consulta_salarios_dpto.xq  
-│   └── informe_salarial.xsl       
-├── scripts/
-│   ├── consultar_xpath.py         
-│   ├── ejecutar_xquery.py        
-│   └── validar_xml.py             
-├── templates/
-│   └── index.html                 
-├── app.py                         
-├── ejecutar_app.bat               
-├── requirements.txt               
-└── README.md                      
+├── data/                          # Datos y esquemas XML/XSD
+│   ├── esquemas_hr.xml            # Archivo de datos de Recursos Humanos
+│   └── esquemas_hr.xsd            # Esquema de validación XSD
+├── queries/                       # Consultas XQuery y estilos XSLT
+│   ├── consulta_empleados_dpto.xq # Consulta de empleados por departamento
+│   ├── consulta_historial_completo.xq # Consulta de historial laboral
+│   ├── consulta_salarios_dpto.xq  # Consulta de salarios por departamento
+│   └── informe_salarial.xsl       # Hoja de estilo para reporte HTML
+├── scripts/                       # Scripts auxiliares de consola (CLI)
+│   ├── consultar_xpath.py         # Ejecución de consultas XPath
+│   ├── ejecutar_xquery.py         # Consulta remota a eXist-db
+│   └── validar_xml.py             # Validador de esquemas XML
+├── templates/                     # Plantillas del dashboard
+│   └── index.html                 # Interfaz gráfica de usuario
+├── app.py                         # Servidor web Flask
+├── ejecutar_app.bat               # Iniciador rápido para Windows
+├── requirements.txt               # Dependencias del proyecto
+└── README.md                      # Documentación principal
 ```
 
 ---
 
-## CÓMO LEVANTAR LA APLICACIÓN WEB (`app.py`)
+##  Estructura de Entidades XML
+
+El sistema de base de datos XML modela las siguientes entidades y relaciones, imitando las llaves primarias (PK) y foráneas (FK) a través de los atributos `id` y `ref_...` para simular integridad referencial:
+
+| Entidad XML | Elemento hijo | Atributos clave | Tipo de datos | Ocurrencias |
+| :--- | :--- | :--- | :--- | :--- |
+| **regiones** | `region` / `pais` | `id`, `nombre_region` | integer/string | 1..∞ |
+| **ubicaciones** | `ubicacion` | `id`, `ref_pais` | integer/string | 1..∞ |
+| **trabajos** | `trabajo` | `id` | string/decimal | 1..∞ |
+| **departamentos** | `departamento` | `id`, `ref_ubicacion` | integer | 1..∞ |
+| **empleados** | `empleado` | `id`, `ref_departamento`, `ref_trabajo` | varios | 1..∞ |
+| **historiales_laborales** | `historial_laboral` | `ref_empleado` | date | 0..∞ |
+
+<details>
+<summary><b>Ver diagrama visual (Entidad-Relación)</b></summary>
+
+```mermaid
+erDiagram
+    REGIONES ||--|{ UBICACIONES : "tiene (por ref_pais)"
+    REGIONES {
+        int id "PK"
+        string nombre_region
+    }
+    PAISES {
+        string id "PK"
+        string nombre_pais
+    }
+    REGIONES ||--|{ PAISES : "contiene"
+
+    UBICACIONES ||--|{ DEPARTAMENTOS : "aloja (ref_ubicacion)"
+    UBICACIONES {
+        int id "PK"
+        string ref_pais "FK"
+        string ciudad
+    }
+
+    DEPARTAMENTOS ||--|{ EMPLEADOS : "emplea (ref_departamento)"
+    DEPARTAMENTOS {
+        int id "PK"
+        int ref_ubicacion "FK"
+        string nombre_departamento
+        int id_gerente
+    }
+
+    TRABAJOS ||--|{ EMPLEADOS : "asigna rol (ref_trabajo)"
+    TRABAJOS {
+        string id "PK"
+        string titulo_trabajo
+    }
+
+    EMPLEADOS ||--o{ HISTORIALES_LABORALES : "posee (ref_empleado)"
+    EMPLEADOS {
+        int id "PK"
+        int ref_departamento "FK"
+        string ref_trabajo "FK"
+        string nombre
+        string email
+    }
+
+    HISTORIALES_LABORALES {
+        int ref_empleado "FK"
+        date fecha_inicio
+        string ref_trabajo "FK"
+        int ref_departamento "FK"
+    }
+```
+</details>
+
+---
+
+##  CÓMO LEVANTAR LA APLICACIÓN WEB (`app.py`)
 
 La forma principal y más sencilla de interactuar con el proyecto es iniciando el servidor web Flask en **`app.py`**. Este servidor proporciona una interfaz gráfica completa que unifica todas las utilidades de validación y consulta.
 
@@ -65,11 +135,11 @@ Abre la consola en el directorio raíz del proyecto y ejecuta los siguientes com
 
 3. **Accede al Dashboard**
    Una vez que en la consola se indique que el servidor está activo, abre tu navegador web preferido y entra en la dirección:
-   **[http://localhost:5000](http://localhost:5000)**
+   👉 **[http://localhost:5000](http://localhost:5000)**
 
 ---
 
-## Configuración Inicial del Entorno (Primera vez)
+##  Configuración Inicial del Entorno (Primera vez)
 
 Si necesitas recrear o instalar las dependencias del proyecto en un entorno local nuevo, sigue estos pasos secuenciales:
 
@@ -94,7 +164,7 @@ pip install -r requirements.txt
 
 ---
 
-## Características del Dashboard Web
+##  Características del Dashboard Web
 
 Una vez levantado `app.py`, el panel de control te permite realizar las siguientes acciones:
 *   **Editor de Consultas**: Redacta y edita libremente expresiones en XPath o XQuery.
@@ -104,11 +174,11 @@ Una vez levantado `app.py`, el panel de control te permite realizar las siguient
     *   *eXist-db (REST)*: Si tienes instalado eXist-db en el puerto `8080`, puedes ejecutar consultas directamente sobre tu servidor de base de datos XML.
 *   **Transformaciones XSLT**: Permite aplicar hojas de estilos `.xsl` (como `informe_salarial.xsl`) sobre las consultas para visualizar la salida formateada en una tabla corporativa estilizada.
 *   **Validación contra XSD**: Verifica al instante si el archivo `esquemas_hr.xml` cumple con el esquema XSD haciendo clic en el botón correspondiente. Mostrará un **banner de estado (verde si es válido, rojo si hay errores)**.
-*   **Gestión de Empleados (Inserción Manual)**: Formulario interactivo en el panel lateral que permite agregar nuevos registros directamente al XML. Valida en tiempo real que el ID y el correo sean únicos, y que se cumplan las restricciones del esquema (como mayúsculas de 3 a 8 letras para el correo, salarios decimales y formato de fecha estándar).
+*   **Gestión de Empleados (Inserción Manual)**: Formulario interactivo en el panel lateral que permite agregar nuevos registros directamente al XML. Valida en tiempo real que el ID y el correo sean únicos, y que se cumplan las restricciones del esquema (como formato estándar para el correo, salarios decimales y formato de fecha estándar).
 
 ---
 
-## Herramientas en Línea de Comandos (CLI)
+##  Herramientas en Línea de Comandos (CLI)
 
 El proyecto también incluye scripts de línea de comandos si prefieres trabajar directamente desde la terminal:
 
@@ -144,11 +214,10 @@ curl -X POST http://localhost:5000/insertar_empleado \
 
 ---
 
-## Reglas estrictas de validación XSD del proyecto
+## ⚠️ Reglas estrictas de validación XSD del proyecto
 El archivo `esquemas_hr.xsd` exige el cumplimiento de ciertos patrones y tipos de datos en el XML:
 *   **ID de empleado**: Clave primaria numérica e incremental.
 *   **Relaciones**: Los campos `ref_departamento` y `ref_trabajo` deben coincidir exactamente con los identificadores declarados en sus respectivas tablas.
-*   **Email**: Debe cumplir con la expresión regular `[A-Z]{3,8}` (mayúsculas exclusivas de entre 3 y 8 caracteres de longitud, sin números ni símbolos).
+*   **Email**: Debe cumplir con la expresión regular para correos estándar `[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}` (por ejemplo, `usuario@correo.com`).
 *   **Salario**: Tipo de dato numérico decimal.
 *   **Fecha de contratación**: Debe seguir estrictamente el estándar ISO `YYYY-MM-DD`.
-# Laboratorio_1-Base-de-datos-avanzados

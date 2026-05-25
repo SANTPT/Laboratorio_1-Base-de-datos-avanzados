@@ -25,7 +25,12 @@
         <pais id="MX" nombre_pais="México"/>
       </paises>
     </region>
-  <region id="5" nombre_region="Asia"><paises><pais id="JP" nombre_pais="Japón"/></paises></region></regiones>
+    <region id="5" nombre_region="Asia">
+      <paises>
+        <pais id="JP" nombre_pais="Japón"/>
+      </paises>
+    </region>
+  </regiones>
   <!-- ============================================================ -->
   <!--  UBICACIONES (Oficinas y Sedes de la Compañía)              -->
   <!-- ============================================================ -->
@@ -118,7 +123,12 @@
       <salario_min>5000.00</salario_min>
       <salario_max>11000.00</salario_max>
     </trabajo>
-  <trabajo id="DBA_SR"><titulo_trabajo>DBA Senior</titulo_trabajo><salario_min>6000.00</salario_min><salario_max>12000.00</salario_max></trabajo></trabajos>
+    <trabajo id="DBA_SR">
+      <titulo_trabajo>DBA Senior</titulo_trabajo>
+      <salario_min>6000.00</salario_min>
+      <salario_max>12000.00</salario_max>
+    </trabajo>
+  </trabajos>
   <!-- ============================================================ -->
   <!--  DEPARTAMENTOS                                               -->
   <!-- ============================================================ -->
@@ -159,7 +169,7 @@
     <empleado id="101" ref_departamento="60" ref_trabajo="IT_PROG">
       <nombre>Ana</nombre>
       <apellidos>García López</apellidos>
-      <email>AGARCIA</email>
+      <email>agarcia@example.com</email>
       <telefono>515.123.4567</telefono>
       <fecha_contratacion>2023-01-15</fecha_contratacion>
       <salario>8000.00</salario>
@@ -173,7 +183,7 @@
     <empleado id="102" ref_departamento="80" ref_trabajo="SA_REP">
       <nombre>Carlos</nombre>
       <apellidos>Ruiz Martínez</apellidos>
-      <email>CRUIZ</email>
+      <email>cruiz@example.com</email>
       <telefono>515.123.4568</telefono>
       <fecha_contratacion>2023-03-22</fecha_contratacion>
       <salario>9500.00</salario>
@@ -182,7 +192,7 @@
     <empleado id="103" ref_departamento="80" ref_trabajo="SA_REP">
       <nombre>María</nombre>
       <apellidos>Fernández Soto</apellidos>
-      <email>MFERNAND</email>
+      <email>mfernand@example.com</email>
       <telefono>515.123.4569</telefono>
       <fecha_contratacion>2023-06-10</fecha_contratacion>
       <salario>6500.00</salario>
@@ -191,7 +201,7 @@
     <empleado id="104" ref_departamento="50" ref_trabajo="ST_CLERK">
       <nombre>Pedro</nombre>
       <apellidos>Sánchez Vidal</apellidos>
-      <email>PSANCHEZ</email>
+      <email>psanchez@example.com</email>
       <telefono>515.123.4570</telefono>
       <fecha_contratacion>2023-09-05</fecha_contratacion>
       <salario>3500.00</salario>
@@ -199,7 +209,7 @@
     <empleado id="105" ref_departamento="70" ref_trabajo="SEC_ANALT">
       <nombre>Laura</nombre>
       <apellidos>Martín Castro</apellidos>
-      <email>LMARTIN</email>
+      <email>lmartin@example.com</email>
       <telefono>515.123.9988</telefono>
       <fecha_contratacion>2024-02-10</fecha_contratacion>
       <salario>7200.00</salario>
@@ -207,7 +217,7 @@
     <empleado id="106" ref_departamento="70" ref_trabajo="SYS_ADMIN">
       <nombre>Javier</nombre>
       <apellidos>Ortiz Susaeta</apellidos>
-      <email>JORTIZ</email>
+      <email>jortiz@example.com</email>
       <telefono>515.123.9989</telefono>
       <fecha_contratacion>2024-05-18</fecha_contratacion>
       <salario>5800.00</salario>
@@ -215,7 +225,7 @@
     <empleado id="107" ref_departamento="90" ref_trabajo="SYS_ADMIN">
       <nombre>Diana</nombre>
       <apellidos>Gómez Restrepo</apellidos>
-      <email>DGOMEZ</email>
+      <email>dgomez@example.com</email>
       <telefono>571.555.0122</telefono>
       <fecha_contratacion>2025-01-10</fecha_contratacion>
       <salario>6000.00</salario>
@@ -223,7 +233,7 @@
     <empleado id="108" ref_departamento="10" ref_trabajo="HR_SPEC">
       <nombre>Sonia</nombre>
       <apellidos>Vázquez Montero</apellidos>
-      <email>SVAZQUEZ</email>
+      <email>svazquez@example.com</email>
       <telefono>415.555.0190</telefono>
       <fecha_contratacion>2022-11-01</fecha_contratacion>
       <salario>5200.00</salario>
@@ -231,7 +241,7 @@
     <empleado id="109" ref_departamento="60" ref_trabajo="DBA_ENG">
       <nombre>Alejandro</nombre>
       <apellidos>Mendoza Pardo</apellidos>
-      <email>AMENDOZA</email>
+      <email>amendoza@example.com</email>
       <telefono>515.123.7711</telefono>
       <fecha_contratacion>2024-08-25</fecha_contratacion>
       <salario>7800.00</salario>
@@ -239,7 +249,7 @@
     <empleado id="110" ref_departamento="80" ref_trabajo="SA_REP">
       <nombre>Elena</nombre>
       <apellidos>Ferrari Pastor</apellidos>
-      <email>EFERRARI</email>
+      <email>eferrari@example.com</email>
       <telefono>39.06.55541</telefono>
       <fecha_contratacion>2025-03-14</fecha_contratacion>
       <salario>6200.00</salario>
@@ -248,7 +258,7 @@
     <empleado id="111" ref_departamento="100" ref_trabajo="SYS_ADMIN">
       <nombre>Helmut</nombre>
       <apellidos>Schneider Kraft</apellidos>
-      <email>HSCHNEID</email>
+      <email>hschneid@example.com</email>
       <telefono>49.30.55522</telefono>
       <fecha_contratacion>2021-06-01</fecha_contratacion>
       <salario>8900.00</salario>
@@ -256,12 +266,100 @@
     <empleado id="112" ref_departamento="70" ref_trabajo="SEC_ANALT">
       <nombre>Diego</nombre>
       <apellidos>Torres Alarcón</apellidos>
-      <email>DTORRES</email>
+      <email>dtorres@example.com</email>
       <telefono>515.123.9990</telefono>
       <fecha_contratacion>2025-10-05</fecha_contratacion>
       <salario>6100.00</salario>
     </empleado>
-  <empleado id="113" ref_departamento="100" ref_trabajo="HR_SPEC"><nombre>Lorena</nombre><apellidos>Guzmán</apellidos><email>BIWCYWK</email><telefono>663.343.8595</telefono><fecha_contratacion>2016-10-04</fecha_contratacion><salario>6862.63</salario></empleado><empleado id="114" ref_departamento="90" ref_trabajo="SEC_ANALT"><nombre>Eva María</nombre><apellidos>Mas</apellidos><email>MRSQKCS</email><telefono>854.538.8765</telefono><fecha_contratacion>2024-05-09</fecha_contratacion><salario>4804.31</salario></empleado><empleado id="115" ref_departamento="70" ref_trabajo="HR_SPEC"><nombre>Guadalupe</nombre><apellidos>Rocha</apellidos><email>BWCWK</email><telefono>547.523.7351</telefono><fecha_contratacion>2018-07-22</fecha_contratacion><salario>3771.79</salario></empleado><empleado id="116" ref_departamento="10" ref_trabajo="HR_SPEC"><nombre>Raquel</nombre><apellidos>Raya</apellidos><email>SIGLOBHV</email><telefono>745.246.8862</telefono><fecha_contratacion>2020-06-08</fecha_contratacion><salario>2909.58</salario></empleado><empleado id="117" ref_departamento="80" ref_trabajo="SA_REP"><nombre>Domingo</nombre><apellidos>Múgica</apellidos><email>XVRKZUS</email><telefono>198.456.9042</telefono><fecha_contratacion>2020-09-26</fecha_contratacion><salario>6787.21</salario></empleado><empleado id="118" ref_departamento="100" ref_trabajo="DBA_ENG"><nombre>Natanael</nombre><apellidos>Peiró</apellidos><email>NTOYP</email><telefono>489.667.3122</telefono><fecha_contratacion>2020-06-16</fecha_contratacion><salario>7393.13</salario></empleado><empleado id="119" ref_departamento="60" ref_trabajo="HR_SPEC"><nombre>Soraya</nombre><apellidos>Conesa</apellidos><email>YJMER</email><telefono>435.451.6953</telefono><fecha_contratacion>2017-06-12</fecha_contratacion><salario>3030.05</salario></empleado><empleado id="120" ref_departamento="90" ref_trabajo="IT_PROG"><nombre>Pepita</nombre><apellidos>Hernandez</apellidos><email>MMFJLT</email><telefono>532.798.5697</telefono><fecha_contratacion>2019-03-03</fecha_contratacion><salario>8276.52</salario></empleado><empleado id="121" ref_departamento="80" ref_trabajo="SEC_ANALT"><nombre>Sara</nombre><apellidos>Collado</apellidos><email>IBCNTBNP</email><telefono>598.648.1086</telefono><fecha_contratacion>2025-05-10</fecha_contratacion><salario>12135.07</salario></empleado><empleado id="122" ref_departamento="70" ref_trabajo="DBA_ENG"><nombre>Tamara</nombre><apellidos>Tapia</apellidos><email>DBGSAK</email><telefono>405.721.7606</telefono><fecha_contratacion>2019-10-15</fecha_contratacion><salario>11168.73</salario></empleado><empleado id="123" ref_departamento="10" ref_trabajo="IT_PROG"><nombre>migue</nombre><apellidos>gacira</apellidos><email>AAAA</email><telefono>444</telefono><fecha_contratacion>2026-05-24</fecha_contratacion><salario>333</salario></empleado></empleados>
+    <empleado id="113" ref_departamento="100" ref_trabajo="HR_SPEC">
+      <nombre>Lorena</nombre>
+      <apellidos>Guzmán</apellidos>
+      <email>biwcywk@example.com</email>
+      <telefono>663.343.8595</telefono>
+      <fecha_contratacion>2016-10-04</fecha_contratacion>
+      <salario>6862.63</salario>
+    </empleado>
+    <empleado id="114" ref_departamento="90" ref_trabajo="SEC_ANALT">
+      <nombre>Eva María</nombre>
+      <apellidos>Mas</apellidos>
+      <email>mrsqkcs@example.com</email>
+      <telefono>854.538.8765</telefono>
+      <fecha_contratacion>2024-05-09</fecha_contratacion>
+      <salario>4804.31</salario>
+    </empleado>
+    <empleado id="115" ref_departamento="70" ref_trabajo="HR_SPEC">
+      <nombre>Guadalupe</nombre>
+      <apellidos>Rocha</apellidos>
+      <email>bwcwk@example.com</email>
+      <telefono>547.523.7351</telefono>
+      <fecha_contratacion>2018-07-22</fecha_contratacion>
+      <salario>3771.79</salario>
+    </empleado>
+    <empleado id="116" ref_departamento="10" ref_trabajo="HR_SPEC">
+      <nombre>Raquel</nombre>
+      <apellidos>Raya</apellidos>
+      <email>siglobhv@example.com</email>
+      <telefono>745.246.8862</telefono>
+      <fecha_contratacion>2020-06-08</fecha_contratacion>
+      <salario>2909.58</salario>
+    </empleado>
+    <empleado id="117" ref_departamento="80" ref_trabajo="SA_REP">
+      <nombre>Domingo</nombre>
+      <apellidos>Múgica</apellidos>
+      <email>xvrkzus@example.com</email>
+      <telefono>198.456.9042</telefono>
+      <fecha_contratacion>2020-09-26</fecha_contratacion>
+      <salario>6787.21</salario>
+    </empleado>
+    <empleado id="118" ref_departamento="100" ref_trabajo="DBA_ENG">
+      <nombre>Natanael</nombre>
+      <apellidos>Peiró</apellidos>
+      <email>ntoyp@example.com</email>
+      <telefono>489.667.3122</telefono>
+      <fecha_contratacion>2020-06-16</fecha_contratacion>
+      <salario>7393.13</salario>
+    </empleado>
+    <empleado id="119" ref_departamento="60" ref_trabajo="HR_SPEC">
+      <nombre>Soraya</nombre>
+      <apellidos>Conesa</apellidos>
+      <email>yjmer@example.com</email>
+      <telefono>435.451.6953</telefono>
+      <fecha_contratacion>2017-06-12</fecha_contratacion>
+      <salario>3030.05</salario>
+    </empleado>
+    <empleado id="120" ref_departamento="90" ref_trabajo="IT_PROG">
+      <nombre>Pepita</nombre>
+      <apellidos>Hernandez</apellidos>
+      <email>mmfjlt@example.com</email>
+      <telefono>532.798.5697</telefono>
+      <fecha_contratacion>2019-03-03</fecha_contratacion>
+      <salario>8276.52</salario>
+    </empleado>
+    <empleado id="121" ref_departamento="80" ref_trabajo="SEC_ANALT">
+      <nombre>Sara</nombre>
+      <apellidos>Collado</apellidos>
+      <email>ibcntbnp@example.com</email>
+      <telefono>598.648.1086</telefono>
+      <fecha_contratacion>2025-05-10</fecha_contratacion>
+      <salario>12135.07</salario>
+    </empleado>
+    <empleado id="122" ref_departamento="70" ref_trabajo="DBA_ENG">
+      <nombre>Tamara</nombre>
+      <apellidos>Tapia</apellidos>
+      <email>dbgsak@example.com</email>
+      <telefono>405.721.7606</telefono>
+      <fecha_contratacion>2019-10-15</fecha_contratacion>
+      <salario>11168.73</salario>
+    </empleado>
+    <empleado id="123" ref_departamento="10" ref_trabajo="IT_PROG">
+      <nombre>migue</nombre>
+      <apellidos>gacira</apellidos>
+      <email>aaaa@example.com</email>
+      <telefono>444</telefono>
+      <fecha_contratacion>2026-05-24</fecha_contratacion>
+      <salario>333</salario>
+    </empleado>
+  </empleados>
   <!-- ============================================================ -->
   <!--  HISTORIAL LABORAL                                           -->
   <!-- ============================================================ -->
