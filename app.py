@@ -2,7 +2,6 @@ import os
 import re
 import time
 import requests
-import random
 from flask import Flask, render_template, request, jsonify
 from lxml import etree
 

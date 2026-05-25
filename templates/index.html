@@ -747,7 +747,7 @@
         }
 
         .collapse.open .collapse-body {
-            max-height: 600px;
+            max-height: 1500px;
             padding: 12px 14px 14px;
         }
 
@@ -1157,10 +1157,64 @@
         @media (max-width: 1100px) {
             main {
                 flex-direction: column;
+                padding: 14px;
+                gap: 14px;
             }
 
             .sidebar {
                 width: 100%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 0 12px;
+                height: 50px;
+            }
+
+            .hd-brand {
+                gap: 8px;
+            }
+
+            .hd-logo {
+                width: 28px;
+                height: 28px;
+            }
+
+            .hd-name h1 {
+                font-size: 0.75rem;
+            }
+
+            .hd-name p {
+                display: none;
+            }
+
+            .status-pill {
+                padding: 4px 8px;
+                font-size: 0.6rem;
+                gap: 5px;
+            }
+
+            .g2 {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .out-tab-btn {
+                padding: 6px 4px;
+                font-size: .62rem;
+                letter-spacing: .05em;
+            }
+
+            .crud-tab-btn {
+                padding: 6px 4px;
+                font-size: .62rem;
+                letter-spacing: .05em;
+            }
+
+            .panel {
+                padding: 16px;
+                gap: 12px;
             }
         }
 

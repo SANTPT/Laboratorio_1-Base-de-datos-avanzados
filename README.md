@@ -219,3 +219,11 @@ El archivo `esquemas_hr.xsd` exige el cumplimiento de ciertos patrones y tipos d
 *   **Email**: Debe cumplir con la expresión regular para correos estándar `[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}` (por ejemplo, `usuario@correo.com`).
 *   **Salario**: Tipo de dato numérico decimal.
 *   **Fecha de contratación**: Debe seguir estrictamente el estándar ISO `YYYY-MM-DD`.
+
+---
+
+## Autores
+Este proyecto fue desarrollado por:
+* **Brandon Elider Patiño Torres** — [elider1005](https://github.com/elider1005)
+* **Santiago Patiño Torres** — [SANTPT](https://github.com/SANTPT)
+
