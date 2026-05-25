@@ -45,8 +45,7 @@ El sistema de base de datos XML modela las siguientes entidades y relaciones, im
 | **empleados** | `empleado` | `id`, `ref_departamento`, `ref_trabajo` | varios | 1..∞ |
 | **historiales_laborales** | `historial_laboral` | `ref_empleado` | date | 0..∞ |
 
-<details>
-<summary><b>Ver diagrama visual (Entidad-Relación)</b></summary>
+### Diagrama Visual (Entidad-Relación)
 
 ```mermaid
 erDiagram
@@ -98,7 +97,6 @@ erDiagram
         int ref_departamento "FK"
     }
 ```
-</details>
 
 ---
 
@@ -135,7 +133,7 @@ Abre la consola en el directorio raíz del proyecto y ejecuta los siguientes com
 
 3. **Accede al Dashboard**
    Una vez que en la consola se indique que el servidor está activo, abre tu navegador web preferido y entra en la dirección:
-   👉 **[http://localhost:5000](http://localhost:5000)**
+    **[http://localhost:5000](http://localhost:5000)**
 
 ---
 
@@ -214,7 +212,7 @@ curl -X POST http://localhost:5000/insertar_empleado \
 
 ---
 
-## ⚠️ Reglas estrictas de validación XSD del proyecto
+##  Reglas estrictas de validación XSD del proyecto
 El archivo `esquemas_hr.xsd` exige el cumplimiento de ciertos patrones y tipos de datos en el XML:
 *   **ID de empleado**: Clave primaria numérica e incremental.
 *   **Relaciones**: Los campos `ref_departamento` y `ref_trabajo` deben coincidir exactamente con los identificadores declarados en sus respectivas tablas.
