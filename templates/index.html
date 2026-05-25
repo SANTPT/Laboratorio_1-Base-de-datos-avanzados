@@ -1,0 +1,2402 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR·XML — Sistema de Control de Datos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* ═══════════════════════════════════════════════
+           DESIGN TOKENS — Mission Control Dark
+        ═══════════════════════════════════════════════ */
+        :root {
+            --void: #040608;
+            --abyss: #070c10;
+            --surface: #0c1218;
+            --panel: #101820;
+            --rim: #1a2530;
+            --grid: #131d26;
+
+            --neon: #00e5a0;
+            --neon-dim: rgba(0, 229, 160, .08);
+            --neon-glow: rgba(0, 229, 160, .18);
+            --cyan: #00bfff;
+            --cyan-dim: rgba(0, 191, 255, .07);
+            --amber: #ffb300;
+            --amber-dim: rgba(255, 179, 0, .08);
+            --rose: #ff4d6d;
+            --rose-dim: rgba(255, 77, 109, .08);
+
+            --txt: #d4e4f0;
+            --txt-muted: #4a6a80;
+            --txt-faint: #243040;
+            --txt-code: #7ee8c8;
+
+            --font-ui: 'Syne', sans-serif;
+            --font-mono: 'DM Mono', monospace;
+
+            --sidebar-w: 420px;
+            --r: 6px;
+            --r-lg: 10px;
+        }
+
+        /* ═══════════════════════════════════════════════
+           RESET & BASE
+        ═══════════════════════════════════════════════ */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-ui);
+            background-color: var(--void);
+            color: var(--txt);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+
+            /* Subtle grid overlay */
+            background-image:
+                linear-gradient(rgba(0, 229, 160, .025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 160, .025) 1px, transparent 1px);
+            background-size: 48px 48px;
+        }
+
+        /* Ambient radial glow top-left */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -120px;
+            left: -120px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(ellipse, rgba(0, 229, 160, .055) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Ambient radial glow bottom-right */
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -100px;
+            right: -100px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(ellipse, rgba(0, 191, 255, .04) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--void);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--rim);
+            border-radius: 99px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--neon-glow);
+        }
+
+        /* ═══════════════════════════════════════════════
+           HEADER / NAV
+        ═══════════════════════════════════════════════ */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            background: rgba(4, 6, 8, .85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--rim);
+            box-shadow: 0 1px 0 rgba(0, 229, 160, .06);
+        }
+
+        .hd-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .hd-logo {
+            position: relative;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hd-logo svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            animation: spin-logo 12s linear infinite;
+        }
+
+        @keyframes spin-logo {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hd-logo-inner {
+            width: 16px;
+            height: 16px;
+            background: var(--neon);
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+            animation: pulse-tri .8s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse-tri {
+            from {
+                opacity: .7;
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1.12);
+            }
+        }
+
+        .hd-name {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .hd-name h1 {
+            font-size: .9rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: #fff;
+        }
+
+        .hd-name h1 span {
+            color: var(--neon);
+        }
+
+        .hd-name p {
+            font-family: var(--font-mono);
+            font-size: .65rem;
+            color: var(--txt-muted);
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .hd-status {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Pulsing status pill */
+        .status-pill {
+            font-family: var(--font-mono);
+            font-size: .7rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            padding: 5px 12px;
+            border-radius: 99px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .status-pill .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .status-pill.online {
+            background: rgba(0, 229, 160, .1);
+            border: 1px solid rgba(0, 229, 160, .25);
+            color: var(--neon);
+        }
+
+        .status-pill.online .dot {
+            background: var(--neon);
+            box-shadow: 0 0 6px var(--neon);
+            animation: blink 1.8s ease-in-out infinite;
+        }
+
+        .status-pill.offline {
+            background: rgba(255, 77, 109, .1);
+            border: 1px solid rgba(255, 77, 109, .25);
+            color: var(--rose);
+        }
+
+        .status-pill.offline .dot {
+            background: var(--rose);
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: .3;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════
+           LAYOUT
+        ═══════════════════════════════════════════════ */
+        main {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex: 1;
+            padding: 24px;
+            gap: 20px;
+            max-width: 2000px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            min-width: 0;
+        }
+
+        /* ═══════════════════════════════════════════════
+           PANELS / CARDS
+        ═══════════════════════════════════════════════ */
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--rim);
+            border-radius: var(--r-lg);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color .25s, box-shadow .25s;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-glow), transparent);
+            opacity: 0;
+            transition: opacity .3s;
+        }
+
+        .panel:hover {
+            border-color: rgba(0, 229, 160, .2);
+            box-shadow: 0 0 28px rgba(0, 229, 160, .04), inset 0 0 24px rgba(0, 229, 160, .02);
+        }
+
+        .panel:hover::before {
+            opacity: 1;
+        }
+
+        /* Panel heading */
+        .panel-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 14px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--rim);
+        }
+
+        .panel-head-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--neon-dim);
+            border: 1px solid rgba(0, 229, 160, .15);
+            color: var(--neon);
+            flex-shrink: 0;
+        }
+
+        .panel-icon svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .panel-title {
+            font-size: .8rem;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--txt);
+        }
+
+        .panel-badge {
+            font-family: var(--font-mono);
+            font-size: .6rem;
+            color: var(--txt-muted);
+            background: var(--surface);
+            border: 1px solid var(--rim);
+            padding: 2px 8px;
+            border-radius: 4px;
+            letter-spacing: .08em;
+        }
+
+        /* ═══════════════════════════════════════════════
+           FORM ELEMENTS
+        ═══════════════════════════════════════════════ */
+        .field {
+            margin-bottom: 14px;
+        }
+
+        .field:last-child {
+            margin-bottom: 0;
+        }
+
+        .field-label {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: .65rem;
+            color: var(--txt-muted);
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        select,
+        input,
+        textarea {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--rim);
+            border-radius: var(--r);
+            color: var(--txt);
+            padding: 9px 13px;
+            font-family: var(--font-mono);
+            font-size: .82rem;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s, background .2s;
+        }
+
+        select:hover,
+        input:hover,
+        textarea:hover {
+            border-color: #253545;
+        }
+
+        select:focus,
+        input:focus,
+        textarea:focus {
+            border-color: rgba(0, 229, 160, .4);
+            box-shadow: 0 0 0 3px rgba(0, 229, 160, .08);
+            background: var(--abyss);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234a6a80'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 14px;
+            padding-right: 36px;
+        }
+
+        /* Type toggle (XPath / XQuery) */
+        .type-toggle {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            background: var(--surface);
+            border: 1px solid var(--rim);
+            border-radius: var(--r);
+            padding: 4px;
+            margin-bottom: 14px;
+        }
+
+        .type-toggle input {
+            display: none;
+        }
+
+        .type-toggle label {
+            display: block;
+            text-align: center;
+            padding: 7px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: .72rem;
+            font-weight: 500;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--txt-muted);
+            transition: all .2s;
+            margin-bottom: 0;
+        }
+
+        .type-toggle input:checked+label {
+            background: var(--neon);
+            color: var(--void);
+            font-weight: 700;
+            box-shadow: 0 0 14px rgba(0, 229, 160, .3);
+        }
+
+        /* ═══════════════════════════════════════════════
+           CODE EDITOR
+        ═══════════════════════════════════════════════ */
+        .editor-shell {
+            border: 1px solid var(--rim);
+            border-radius: var(--r);
+            overflow: hidden;
+            background: var(--abyss);
+            transition: border-color .2s;
+        }
+
+        .editor-shell:focus-within {
+            border-color: rgba(0, 229, 160, .3);
+            box-shadow: 0 0 0 3px rgba(0, 229, 160, .06);
+        }
+
+        .editor-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--rim);
+        }
+
+        .editor-dots {
+            display: flex;
+            gap: 5px;
+        }
+
+        .editor-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .editor-dots .d1 {
+            background: #ff5f57;
+        }
+
+        .editor-dots .d2 {
+            background: #febc2e;
+        }
+
+        .editor-dots .d3 {
+            background: #28c840;
+        }
+
+        .editor-lang {
+            font-family: var(--font-mono);
+            font-size: .6rem;
+            color: var(--txt-muted);
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            background: var(--rim);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        textarea.code-editor {
+            font-family: var(--font-mono);
+            font-size: .83rem;
+            height: 240px;
+            resize: vertical;
+            line-height: 1.65;
+            background: transparent;
+            border: none;
+            color: var(--txt-code);
+            padding: 14px;
+            border-radius: 0;
+        }
+
+        textarea.code-editor::placeholder {
+            color: var(--txt-faint);
+        }
+
+        /* ═══════════════════════════════════════════════
+           BUTTONS
+        ═══════════════════════════════════════════════ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 11px 20px;
+            border-radius: var(--r);
+            font-family: var(--font-mono);
+            font-weight: 500;
+            font-size: .78rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border: none;
+            transition: all .2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, .06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .btn-run {
+            background: var(--neon);
+            color: var(--void);
+            font-weight: 700;
+            box-shadow: 0 0 20px rgba(0, 229, 160, .25);
+        }
+
+        .btn-run:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 0 28px rgba(0, 229, 160, .4);
+            transform: translateY(-1px);
+        }
+
+        .btn-run:active {
+            transform: translateY(0);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--txt);
+            border: 1px solid var(--rim);
+        }
+
+        .btn-ghost:hover {
+            border-color: rgba(0, 229, 160, .3);
+            color: var(--neon);
+            background: var(--neon-dim);
+        }
+
+        .btn-cyan {
+            background: var(--cyan-dim);
+            color: var(--cyan);
+            border: 1px solid rgba(0, 191, 255, .15);
+        }
+
+        .btn-cyan:hover {
+            background: rgba(0, 191, 255, .14);
+            border-color: rgba(0, 191, 255, .35);
+            transform: translateY(-1px);
+        }
+
+        /* ═══════════════════════════════════════════════
+           ENGINE SELECTOR (radio tabs mini)
+        ═══════════════════════════════════════════════ */
+        .engine-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .engine-opt input {
+            display: none;
+        }
+
+        .engine-opt label {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding: 10px 12px;
+            border-radius: var(--r);
+            cursor: pointer;
+            border: 1px solid var(--rim);
+            background: var(--surface);
+            transition: all .2s;
+        }
+
+        .engine-opt label .eng-name {
+            font-family: var(--font-mono);
+            font-size: .72rem;
+            font-weight: 500;
+            color: var(--txt-muted);
+            letter-spacing: .06em;
+            transition: color .2s;
+        }
+
+        .engine-opt label .eng-sub {
+            font-family: var(--font-mono);
+            font-size: .58rem;
+            color: var(--txt-faint);
+        }
+
+        .engine-opt input:checked+label {
+            border-color: rgba(0, 229, 160, .35);
+            background: var(--neon-dim);
+        }
+
+        .engine-opt input:checked+label .eng-name {
+            color: var(--neon);
+        }
+
+        .engine-opt input:disabled+label {
+            opacity: .4;
+            cursor: not-allowed;
+        }
+
+        /* ═══════════════════════════════════════════════
+           COLLAPSIBLE
+        ═══════════════════════════════════════════════ */
+        .collapse {
+            border: 1px solid var(--rim);
+            border-radius: var(--r);
+            overflow: hidden;
+            background: var(--surface);
+            margin-top: 10px;
+            transition: border-color .2s;
+        }
+
+        .collapse.open {
+            border-color: rgba(0, 191, 255, .2);
+        }
+
+        .collapse-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            cursor: pointer;
+            user-select: none;
+            transition: background .2s;
+        }
+
+        .collapse-trigger:hover {
+            background: rgba(255, 255, 255, .02);
+        }
+
+        .collapse-trigger span {
+            font-family: var(--font-mono);
+            font-size: .68rem;
+            color: var(--txt-muted);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+        .collapse-trigger svg {
+            width: 14px;
+            height: 14px;
+            color: var(--txt-muted);
+            transition: transform .25s;
+        }
+
+        .collapse.open .collapse-trigger svg {
+            transform: rotate(180deg);
+        }
+
+        .collapse-body {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 14px;
+            transition: max-height .3s cubic-bezier(.4, 0, .2, 1), padding .3s;
+        }
+
+        .collapse.open .collapse-body {
+            max-height: 600px;
+            padding: 12px 14px 14px;
+        }
+
+        /* ═══════════════════════════════════════════════
+           ENTITY SELECTOR TABS
+        ═══════════════════════════════════════════════ */
+        .entity-tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+            margin-bottom: 14px;
+        }
+
+        .entity-tabs select {
+            grid-column: 1 / -1;
+        }
+
+        /* ═══════════════════════════════════════════════
+           OUTPUT TABS
+        ═══════════════════════════════════════════════ */
+        .out-tabs {
+            display: flex;
+            gap: 2px;
+            background: var(--surface);
+            border: 1px solid var(--rim);
+            border-radius: var(--r);
+            padding: 3px;
+            margin-bottom: 16px;
+        }
+
+        .out-tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--txt-muted);
+            padding: 8px 12px;
+            font-family: var(--font-mono);
+            font-size: .7rem;
+            font-weight: 500;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all .2s;
+        }
+
+        .out-tab-btn:hover {
+            color: var(--txt);
+            background: rgba(255, 255, 255, .03);
+        }
+
+        .out-tab-btn.active {
+            background: var(--neon);
+            color: var(--void);
+            font-weight: 700;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            animation: fadeUp .2s ease;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ═══════════════════════════════════════════════
+           CODE OUTPUT
+        ═══════════════════════════════════════════════ */
+        .code-output {
+            position: relative;
+            background: var(--abyss);
+            border: 1px solid var(--rim);
+            border-radius: var(--r);
+            flex: 1;
+            overflow: auto;
+            max-height: 560px;
+        }
+
+        pre.out-pre {
+            font-family: var(--font-mono);
+            font-size: .8rem;
+            padding: 18px;
+            color: #a0c8b0;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            min-height: 200px;
+        }
+
+        /* Scan line animation on code block */
+        .code-output::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(0, 229, 160, .5), transparent);
+            animation: scan 4s ease-in-out infinite;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .3s;
+        }
+
+        .code-output.scanning::after {
+            opacity: 1;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0;
+                opacity: 0;
+            }
+
+            5% {
+                opacity: 1;
+            }
+
+            95% {
+                opacity: 1;
+            }
+
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════
+           TABLE VIEW
+        ═══════════════════════════════════════════════ */
+        .xslt-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0, 191, 255, .05);
+            border: 1px solid rgba(0, 191, 255, .12);
+            border-radius: var(--r);
+            padding: 10px 14px;
+            margin-bottom: 14px;
+        }
+
+        .xslt-bar-label {
+            font-family: var(--font-mono);
+            font-size: .65rem;
+            color: var(--cyan);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .xslt-bar select {
+            flex: 1;
+            background: var(--surface);
+            border-color: rgba(0, 191, 255, .15);
+            color: var(--txt);
+            font-size: .78rem;
+            padding: 7px 34px 7px 10px;
+        }
+
+        .table-shell {
+            background: var(--abyss);
+            border: 1px solid var(--rim);
+            border-radius: var(--r);
+            overflow: auto;
+            max-height: 520px;
+            flex: 1;
+        }
+
+        .table-shell table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            font-family: var(--font-mono) !important;
+            font-size: .8rem !important;
+        }
+
+        .table-shell thead {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .table-shell th {
+            background: var(--surface) !important;
+            color: var(--txt-muted) !important;
+            font-weight: 500 !important;
+            padding: 10px 14px !important;
+            border-bottom: 1px solid var(--rim) !important;
+            text-transform: uppercase !important;
+            font-size: .65rem !important;
+            letter-spacing: .1em !important;
+            white-space: nowrap;
+        }
+
+        .table-shell td {
+            padding: 9px 14px !important;
+            border-bottom: 1px solid rgba(26, 37, 48, .6) !important;
+            color: #8ab8a8 !important;
+            background: transparent !important;
+        }
+
+        .table-shell tr:last-child td {
+            border-bottom: none !important;
+        }
+
+        .table-shell tr:hover td {
+            background: rgba(0, 229, 160, .04) !important;
+            color: var(--txt) !important;
+        }
+
+        .table-shell .money {
+            text-align: right !important;
+            color: var(--neon) !important;
+            font-weight: 500 !important;
+        }
+
+        /* ═══════════════════════════════════════════════
+           STATUS BAR (bottom of output panel)
+        ═══════════════════════════════════════════════ */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding: 8px 14px;
+            background: var(--surface);
+            border: 1px solid var(--rim);
+            border-radius: var(--r);
+            font-family: var(--font-mono);
+            font-size: .68rem;
+        }
+
+        .sb-state {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--txt-muted);
+        }
+
+        .sb-state .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--rim);
+        }
+
+        .sb-state.ok .dot {
+            background: var(--neon);
+            box-shadow: 0 0 6px var(--neon);
+        }
+
+        .sb-state.err .dot {
+            background: var(--rose);
+            box-shadow: 0 0 6px var(--rose);
+        }
+
+        .sb-state.ok {
+            color: var(--neon);
+        }
+
+        .sb-state.err {
+            color: var(--rose);
+        }
+
+        .sb-meta {
+            display: flex;
+            gap: 20px;
+            color: var(--txt-muted);
+        }
+
+        .sb-meta span {
+            letter-spacing: .05em;
+        }
+
+        /* ═══════════════════════════════════════════════
+           LOADER OVERLAY
+        ═══════════════════════════════════════════════ */
+        .loader-layer {
+            position: absolute;
+            inset: 0;
+            background: rgba(4, 6, 8, .75);
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            z-index: 50;
+            border-radius: var(--r-lg);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .2s;
+        }
+
+        .loader-layer.on {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .loader-ring {
+            width: 36px;
+            height: 36px;
+            border: 2px solid rgba(0, 229, 160, .1);
+            border-top-color: var(--neon);
+            border-radius: 50%;
+            animation: spin-ring 1s linear infinite;
+        }
+
+        @keyframes spin-ring {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loader-text {
+            font-family: var(--font-mono);
+            font-size: .68rem;
+            color: var(--neon);
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            animation: loader-dots 1.4s ease infinite;
+        }
+
+        @keyframes loader-dots {
+
+            0%,
+            100% {
+                opacity: .4;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════
+           BANNER ALERTS
+        ═══════════════════════════════════════════════ */
+        .alert {
+            padding: 12px 16px;
+            border-radius: var(--r);
+            font-family: var(--font-mono);
+            font-size: .78rem;
+            line-height: 1.6;
+            margin-top: 12px;
+            display: none;
+            white-space: pre-wrap;
+            animation: fadeUp .25s ease;
+        }
+
+        .alert.ok {
+            background: rgba(0, 229, 160, .07);
+            border: 1px solid rgba(0, 229, 160, .2);
+            color: #6dffc9;
+            display: block;
+        }
+
+        .alert.err {
+            background: var(--rose-dim);
+            border: 1px solid rgba(255, 77, 109, .25);
+            color: #ff8fa3;
+            display: block;
+        }
+
+        /* ═══════════════════════════════════════════════
+           GRID HELPERS
+        ═══════════════════════════════════════════════ */
+        .g2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .g2 .field {
+            margin-bottom: 0;
+        }
+
+        /* ═══════════════════════════════════════════════
+           ENTITY FORM GROUPS
+        ═══════════════════════════════════════════════ */
+        .entity-form {
+            display: none;
+        }
+
+        .entity-form.active {
+            display: block;
+            animation: fadeUp .2s ease;
+        }
+
+        /* ═══════════════════════════════════════════════
+           RESPONSIVE
+        ═══════════════════════════════════════════════ */
+        @media (max-width: 1100px) {
+            main {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+        }
+
+        /* Entry animations */
+        .panel {
+            animation: panelIn .4s ease both;
+        }
+
+        .sidebar .panel:nth-child(1) {
+            animation-delay: .05s;
+        }
+
+        .sidebar .panel:nth-child(2) {
+            animation-delay: .12s;
+        }
+
+        .content-area .panel {
+            animation-delay: .08s;
+        }
+
+        @keyframes panelIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* CRUD Tab System */
+        .crud-tabs {
+            display: flex;
+            gap: 2px;
+            background: var(--abyss);
+            border: 1px solid var(--rim);
+            border-radius: var(--r);
+            padding: 2px;
+            margin-bottom: 12px;
+        }
+
+        .crud-tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--txt-muted);
+            padding: 7px 10px;
+            font-family: var(--font-mono);
+            font-size: .68rem;
+            font-weight: 500;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all .2s;
+        }
+
+        .crud-tab-btn:hover {
+            color: var(--txt);
+            background: rgba(255, 255, 255, .03);
+        }
+
+        .crud-tab-btn.active {
+            background: var(--cyan-dim);
+            color: var(--cyan);
+            border: 1px solid rgba(0, 191, 255, 0.15);
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ╔══════════════════════════════════════╗ -->
+    <!-- ║  HEADER                              ║ -->
+    <!-- ╚══════════════════════════════════════╝ -->
+    <header>
+        <div class="hd-brand">
+            <div class="hd-logo">
+                <svg viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="17" cy="17" r="16" stroke="rgba(0,229,160,0.25)" stroke-width="1"
+                        stroke-dasharray="4 3" />
+                </svg>
+                <div class="hd-logo-inner"></div>
+            </div>
+            <div class="hd-name">
+                <h1>HR<span>·XML</span></h1>
+                <p>Bases de Datos Avanzadas — Control de Datos</p>
+            </div>
+        </div>
+        <div class="hd-status">
+            {% if saxon_available %}
+            <div class="status-pill online">
+                <span class="dot"></span>
+                Saxon-HE Online
+            </div>
+            {% else %}
+            <div class="status-pill offline">
+                <span class="dot"></span>
+                Saxon-HE Offline
+            </div>
+            {% endif %}
+        </div>
+    </header>
+
+    <main>
+
+        <!-- ╔══════════════════════════════════════╗ -->
+        <!-- ║  SIDEBAR                             ║ -->
+        <!-- ╚══════════════════════════════════════╝ -->
+        <section class="sidebar">
+
+            <!-- Panel: Query Editor -->
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="panel-head-left">
+                        <div class="panel-icon">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                            </svg>
+                        </div>
+                        <span class="panel-title">Editor de Consultas</span>
+                    </div>
+                    <span class="panel-badge">XPath / XQuery</span>
+                </div>
+
+                <!-- Preset selector -->
+                <div class="field">
+                    <label class="field-label">Consulta predefinida</label>
+                    <select id="presetSelect">
+                        <option value="" disabled selected>— Seleccionar consulta —</option>
+                        <optgroup label="XPath (local)">
+                            {% for key in xpath_presets.keys() %}
+                            <option value="{{ key }}" data-type="xpath">{{ key }}</option>
+                            {% endfor %}
+                        </optgroup>
+                        <optgroup label="XQuery (eXist-db / Saxon)">
+                            {% for key in xquery_presets.keys() %}
+                            <option value="{{ key }}" data-type="xquery">{{ key }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                </div>
+
+                <!-- Query type toggle -->
+                <div class="type-toggle">
+                    <div class="radio-opt">
+                        <input type="radio" id="typeXpath" name="queryType" value="xpath" checked>
+                        <label for="typeXpath">XPath</label>
+                    </div>
+                    <div class="radio-opt">
+                        <input type="radio" id="typeXquery" name="queryType" value="xquery">
+                        <label for="typeXquery">XQuery</label>
+                    </div>
+                </div>
+
+                <!-- Code editor -->
+                <div class="field">
+                    <label class="field-label">Expresión</label>
+                    <div class="editor-shell">
+                        <div class="editor-bar">
+                            <div class="editor-dots">
+                                <span class="d1"></span>
+                                <span class="d2"></span>
+                                <span class="d3"></span>
+                            </div>
+                            <span class="editor-lang" id="editorLang">XPath</span>
+                        </div>
+                        <textarea id="queryEditor" class="code-editor"
+                            placeholder="Escribe una expresión XPath o XQuery aquí...&#10;&#10;Ej: /sistema_rh/empleados/empleado[salario > 7000]"></textarea>
+                    </div>
+                </div>
+
+                <!-- Engine options (XQuery only) -->
+                <div id="xqueryEngineOptions" style="display:none">
+                    <div class="field">
+                        <label class="field-label">Motor de ejecución</label>
+                        <div class="engine-grid">
+                            <div class="engine-opt">
+                                <input type="radio" id="engineSaxon" name="xqueryEngine" value="local" {% if
+                                    saxon_available %}checked{% else %}disabled{% endif %}>
+                                <label for="engineSaxon">
+                                    <span class="eng-name">Saxon-HE</span>
+                                    <span class="eng-sub">Local · XQuery 3.1</span>
+                                </label>
+                            </div>
+                            <div class="engine-opt">
+                                <input type="radio" id="engineExist" name="xqueryEngine" value="existdb" {% if not
+                                    saxon_available %}checked{% endif %}>
+                                <label for="engineExist">
+                                    <span class="eng-name">eXist-db</span>
+                                    <span class="eng-sub">REST · puerto 8080</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="existConfigBox" class="collapse">
+                        <div class="collapse-trigger" onclick="toggleCollapse(this)">
+                            <span>Configurar conexión eXist-db</span>
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                        <div class="collapse-body">
+                            <div class="field">
+                                <label class="field-label">URL Endpoint REST</label>
+                                <input type="text" id="existUrl" value="http://localhost:8080/exist/rest/db">
+                            </div>
+                            <div class="g2">
+                                <div class="field">
+                                    <label class="field-label">Usuario</label>
+                                    <input type="text" id="existUser" value="admin">
+                                </div>
+                                <div class="field">
+                                    <label class="field-label">Contraseña</label>
+                                    <input type="password" id="existPass">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+                <button class="btn btn-run" id="btnEjecutar">
+                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M5 3l9 5-9 5V3z" />
+                    </svg>
+                    Ejecutar Consulta
+                </button>
+            </div>
+
+            <!-- Panel: Validación & Gestión -->
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="panel-head-left">
+                        <div class="panel-icon"
+                            style="background:var(--amber-dim);border-color:rgba(255,179,0,.15);color:var(--amber)">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                        </div>
+                        <span class="panel-title">Validación &amp; Datos</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-ghost" id="btnValidar" style="margin-bottom:14px">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Validar contra esquema XSD
+                </button>
+
+                <!-- Insert collapse -->
+                <div class="collapse" id="manualInsertBox">
+                    <div class="collapse-trigger" onclick="toggleCollapse(this)">
+                        <span>Gestión de Datos (CRUD)</span>
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="collapse-body">
+
+                        <!-- Action sub-tabs -->
+                        <div class="crud-tabs">
+                            <button type="button" class="crud-tab-btn active" id="tabCrudInsert" onclick="switchCrudAction('insert')">Registrar</button>
+                            <button type="button" class="crud-tab-btn" id="tabCrudUpdate" onclick="switchCrudAction('update')">Actualizar</button>
+                            <button type="button" class="crud-tab-btn" id="tabCrudDelete" onclick="switchCrudAction('delete')">Eliminar</button>
+                        </div>
+
+                        <div class="field" style="margin-bottom:12px">
+                            <label class="field-label">Entidad / Tabla</label>
+                            <select id="entitySelect" onchange="switchEntityForm()">
+                                <option value="empleado" selected>Empleado</option>
+                                <option value="region">Región</option>
+                                <option value="pais">País</option>
+                                <option value="ubicacion">Ubicación</option>
+                                <option value="trabajo">Trabajo</option>
+                                <option value="departamento">Departamento</option>
+                                <option value="historial_laboral">Historial Laboral</option>
+                            </select>
+                        </div>
+
+                        <!-- Select Record (visible for Update and Delete) -->
+                        <div class="field" id="recordSelectorField" style="display:none; margin-bottom:12px;">
+                            <label class="field-label" id="recordSelectorLabel">Registro a actualizar</label>
+                            <select id="recordSelect" onchange="onRecordSelectChange()">
+                                <!-- Options will be populated dynamically based on selected entity -->
+                            </select>
+                        </div>
+
+                        <!-- Form: Empleado -->
+                        <div id="form-empleado" class="entity-form active">
+                            <div class="g2">
+                                <div class="field">
+                                    <label class="field-label">ID Empleado</label>
+                                    <input type="number" id="insEmpId" value="{{ next_emp_id }}">
+                                </div>
+                                <div class="field">
+                                    <label class="field-label">Nombre</label>
+                                    <input type="text" id="insEmpNombre" placeholder="Ana">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Apellidos</label>
+                                <input type="text" id="insEmpApellidos" placeholder="García López">
+                            </div>
+                            <div class="g2">
+                                <div class="field">
+                                    <label class="field-label">Email (3-8 MAY)</label>
+                                    <input type="text" id="insEmpEmail" placeholder="AGARCIA">
+                                </div>
+                                <div class="field">
+                                    <label class="field-label">Teléfono</label>
+                                    <input type="text" id="insEmpTel" placeholder="515.123.4567">
+                                </div>
+                            </div>
+                            <div class="g2">
+                                <div class="field">
+                                    <label class="field-label">Contratación</label>
+                                    <input type="date" id="insEmpFecha" value="2026-05-24">
+                                </div>
+                                <div class="field">
+                                    <label class="field-label">Salario (€)</label>
+                                    <input type="number" id="insEmpSalario" step="0.01" placeholder="8000.00">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Comisión (opcional)</label>
+                                <input type="number" id="insEmpComision" step="0.01" placeholder="0.10">
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Departamento</label>
+                                <select id="insEmpDpto">
+                                    {% for dpto in departamentos_list %}
+                                    <option value="{{ dpto.id }}">{{ dpto.nombre }} ({{ dpto.id }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Puesto / Trabajo</label>
+                                <select id="insEmpTrabajo">
+                                    {% for job in trabajos_list %}
+                                    <option value="{{ job.id }}">{{ job.titulo }} ({{ job.id }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Form: Región -->
+                        <div id="form-region" class="entity-form">
+                            <div class="field">
+                                <label class="field-label">ID Región</label>
+                                <input type="number" id="insRegionId" value="{{ next_region_id }}">
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Nombre Región</label>
+                                <input type="text" id="insRegionNombre" placeholder="América del Sur">
+                            </div>
+                        </div>
+
+                        <!-- Form: País -->
+                        <div id="form-pais" class="entity-form">
+                            <div class="field">
+                                <label class="field-label">ID País (2 letras)</label>
+                                <input type="text" id="insPaisId" placeholder="CO" maxlength="2">
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Nombre País</label>
+                                <input type="text" id="insPaisNombre" placeholder="Colombia">
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Región</label>
+                                <select id="insPaisRegion">
+                                    {% for reg in regiones_list %}
+                                    <option value="{{ reg.id }}">{{ reg.nombre }} ({{ reg.id }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Form: Ubicación -->
+                        <div id="form-ubicacion" class="entity-form">
+                            <div class="field">
+                                <label class="field-label">ID Ubicación</label>
+                                <input type="number" id="insUbicacionId" value="{{ next_ubicacion_id }}">
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Dirección Calle</label>
+                                <input type="text" id="insUbicacionCalle" placeholder="Calle 67 # 53-108">
+                            </div>
+                            <div class="g2">
+                                <div class="field">
+                                    <label class="field-label">Cód. Postal</label>
+                                    <input type="text" id="insUbicacionCP" placeholder="050010">
+                                </div>
+                                <div class="field">
+                                    <label class="field-label">Ciudad</label>
+                                    <input type="text" id="insUbicacionCiudad" placeholder="Medellín">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Provincia / Estado (opcional)</label>
+                                <input type="text" id="insUbicacionProvincia" placeholder="Antioquia">
+                            </div>
+                            <div class="field">
+                                <label class="field-label">País</label>
+                                <select id="insUbicacionPais">
+                                    {% for reg in regiones_list %}
+                                    <optgroup label="{{ reg.nombre }}">
+                                        {% for pais in paises_list %}
+                                        {% if pais.region_id == reg.id %}
+                                        <option value="{{ pais.id }}">{{ pais.nombre }} ({{ pais.id }})</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </optgroup>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Form: Trabajo -->
+                        <div id="form-trabajo" class="entity-form">
+                            <div class="field">
+                                <label class="field-label">ID Trabajo (Ej: DBA_SR)</label>
+                                <input type="text" id="insTrabajoId" placeholder="DBA_SR">
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Título del Trabajo</label>
+                                <input type="text" id="insTrabajoTitulo" placeholder="Administrador de Base de Datos">
+                            </div>
+                            <div class="g2">
+                                <div class="field">
+                                    <label class="field-label">Salario Mín</label>
+                                    <input type="number" id="insTrabajoSalMin" step="0.01" placeholder="5000.00">
+                                </div>
+                                <div class="field">
+                                    <label class="field-label">Salario Máx</label>
+                                    <input type="number" id="insTrabajoSalMax" step="0.01" placeholder="12000.00">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form: Departamento -->
+                        <div id="form-departamento" class="entity-form">
+                            <div class="field">
+                                <label class="field-label">ID Departamento</label>
+                                <input type="number" id="insDeptId" value="{{ next_dept_id }}">
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Nombre Departamento</label>
+                                <input type="text" id="insDeptNombre" placeholder="I+D Avanzado">
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Gerente (opcional)</label>
+                                <select id="insDeptGerente">
+                                    <option value="">— Sin Gerente —</option>
+                                    {% for emp in empleados_list %}
+                                    <option value="{{ emp.id }}">{{ emp.nombre }} ({{ emp.id }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Ubicación</label>
+                                <select id="insDeptUbicacion">
+                                    {% for ub in ubicaciones_list %}
+                                    <option value="{{ ub.id }}">{{ ub.nombre }} ({{ ub.id }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Form: Historial Laboral -->
+                        <div id="form-historial_laboral" class="entity-form">
+                            <div class="field">
+                                <label class="field-label">Empleado</label>
+                                <select id="insHistEmp">
+                                    {% for emp in empleados_list %}
+                                    <option value="{{ emp.id }}">{{ emp.nombre }} ({{ emp.id }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="g2">
+                                <div class="field">
+                                    <label class="field-label">Fecha Inicio</label>
+                                    <input type="date" id="insHistFIni" value="2020-01-01">
+                                </div>
+                                <div class="field">
+                                    <label class="field-label">Fecha Fin</label>
+                                    <input type="date" id="insHistFFin" value="2025-12-31">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Puesto / Trabajo</label>
+                                <select id="insHistTrabajo">
+                                    {% for job in trabajos_list %}
+                                    <option value="{{ job.id }}">{{ job.titulo }} ({{ job.id }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Departamento</label>
+                                <select id="insHistDept">
+                                    {% for dpto in departamentos_list %}
+                                    <option value="{{ dpto.id }}">{{ dpto.nombre }} ({{ dpto.id }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <br>
+                        <button class="btn btn-cyan" id="btnInsertar">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Registrar <span id="insertBtnText">Empleado</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="utilBanner" class="alert"></div>
+            </div>
+
+        </section>
+
+        <!-- ╔══════════════════════════════════════╗ -->
+        <!-- ║  CONTENT AREA                        ║ -->
+        <!-- ╚══════════════════════════════════════╝ -->
+        <section class="content-area">
+            <div class="panel" style="flex:1;display:flex;flex-direction:column;position:relative;">
+
+                <div class="loader-layer" id="loadingOverlay">
+                    <div class="loader-ring"></div>
+                    <span class="loader-text">Procesando</span>
+                </div>
+
+                <div class="panel-head">
+                    <div class="panel-head-left">
+                        <div class="panel-icon"
+                            style="background:rgba(0,191,255,.08);border-color:rgba(0,191,255,.15);color:var(--cyan)">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <span class="panel-title">Resultados</span>
+                    </div>
+                    <span class="panel-badge" id="filenameBadge">esquemas_hr.xml</span>
+                </div>
+
+                <!-- Output tabs -->
+                <div class="out-tabs">
+                    <button class="out-tab-btn active" onclick="switchTab('rawTab', this)">Salida XML</button>
+                    <button class="out-tab-btn" id="btnTableTab" onclick="switchTab('tableTab', this)">Vista Tabla</button>
+                    <button class="out-tab-btn" id="btnXmlCompletoTab" onclick="switchTab('xmlCompletoTab', this); cargarXmlCompleto();">Base de Datos XML</button>
+                </div>
+
+                <!-- Tab: Raw XML -->
+                <div class="tab-pane active" id="rawTab">
+                    <div class="code-output" id="codeOutput">
+                        <pre class="out-pre"
+                            id="resultPre">&lt;!-- Los resultados aparecer&#225;n aqu&#237; tras ejecutar una consulta --&gt;</pre>
+                    </div>
+                </div>
+
+                <!-- Tab: Table -->
+                <div class="tab-pane" id="tableTab">
+                    <div class="xslt-bar">
+                        <span class="xslt-bar-label">XSLT</span>
+                        <select id="xsltSelect" onchange="applyXsltChange()">
+                            <option value="">— Tabla Auto-generada —</option>
+                            {% for file in xslt_files %}
+                            <option value="{{ file }}">{{ file }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="table-shell" id="tableViewContainer">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Ejecuta una consulta para ver los datos en tabla.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab: XML Completo -->
+                <div class="tab-pane" id="xmlCompletoTab">
+                    <div style="padding: 10px 16px; border-bottom: 1px solid var(--rim); display: flex; justify-content: flex-end; align-items: center; background: rgba(0, 191, 255, 0.02); gap: 12px;">
+                        <span style="font-size: 0.72rem; color: var(--txt-muted); font-family: var(--font-mono); margin-right: auto;">esquemas_hr.xml</span>
+                        <button class="btn btn-ghost" onclick="cargarXmlCompleto()" style="font-size: 0.72rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">
+                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                            </svg>
+                            Recargar XML
+                        </button>
+                    </div>
+                    <div class="code-output" id="xmlCompletoOutput">
+                        <pre class="out-pre" id="xmlCompletoPre" style="color: var(--txt); font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.4; white-space: pre;"></pre>
+                    </div>
+                </div>
+
+                <!-- Status bar -->
+                <div class="status-bar">
+                    <div class="sb-state" id="statusBadge">
+                        <span class="dot"></span>
+                        <span id="statusText">Listo</span>
+                    </div>
+                    <div class="sb-meta">
+                        <span id="metaCount">Resultados: —</span>
+                        <span id="metaTime">Duración: —</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const xpathPresets = {{ xpath_presets  | tojson }};
+        const dbLists = {
+            region: {{ regiones_list | tojson }},
+            pais: {{ paises_list | tojson }},
+            ubicacion: {{ ubicaciones_list | tojson }},
+            trabajo: {{ trabajos_list | tojson }},
+            departamento: {{ departamentos_list | tojson }},
+            empleado: {{ empleados_list | tojson }},
+            historial_laboral: {{ historiales_list | tojson }}
+        };
+        let lastXmlResult = "";
+
+        /* ── Colapsar ── */
+        function toggleCollapse(el) {
+            el.parentElement.classList.toggle('open');
+        }
+
+        /* ── Pestañas de salida ── */
+        function switchTab(id, btn) {
+            document.querySelectorAll('.out-tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            document.getElementById(id)?.classList.add('active');
+        }
+
+        /* ── Indicador de carga ── */
+        function showLoader(on) {
+            const el = document.getElementById('loadingOverlay');
+            el.classList.toggle('on', on);
+        }
+
+        /* ── Barra de estado ── */
+        function updateMeta(ok, msg, count, ms) {
+            const badge = document.getElementById('statusBadge');
+            badge.className = 'sb-state ' + (ok ? 'ok' : 'err');
+            document.getElementById('statusText').textContent = msg || (ok ? 'Completado' : 'Error');
+            document.getElementById('metaCount').textContent = count !== undefined ? `Resultados: ${count}` : 'Resultados: —';
+            document.getElementById('metaTime').textContent = ms !== undefined ? `Duración: ${ms} ms` : 'Duración: —';
+        }
+
+        /* ── Cambio de tipo de consulta ── */
+        document.querySelectorAll('input[name="queryType"]').forEach(r => {
+            r.addEventListener('change', function () {
+                const box = document.getElementById('xqueryEngineOptions');
+                const lang = document.getElementById('editorLang');
+                document.getElementById('presetSelect').value = '';
+                if (this.value === 'xquery') { box.style.display = 'block'; lang.textContent = 'XQuery'; }
+                else { box.style.display = 'none'; lang.textContent = 'XPath'; }
+            });
+        });
+
+        /* ── Cambio de motor XQuery ── */
+        document.querySelectorAll('input[name="xqueryEngine"]').forEach(r => {
+            r.addEventListener('change', function () {
+                const cfg = document.getElementById('existConfigBox');
+                if (this.value === 'existdb') cfg.classList.add('open');
+                else cfg.classList.remove('open');
+            });
+        });
+
+        /* ── Selección de consulta predefinida ── */
+        document.getElementById('presetSelect').addEventListener('change', function () {
+            const opt = this.options[this.selectedIndex];
+            const name = this.value;
+            const type = opt.getAttribute('data-type');
+
+            if (type === 'xpath') {
+                document.getElementById('typeXpath').checked = true;
+                document.getElementById('xqueryEngineOptions').style.display = 'none';
+                document.getElementById('editorLang').textContent = 'XPath';
+            } else {
+                document.getElementById('typeXquery').checked = true;
+                document.getElementById('xqueryEngineOptions').style.display = 'block';
+                document.getElementById('editorLang').textContent = 'XQuery';
+            }
+
+            showLoader(true);
+            fetch(`/get_preset_content?name=${name}&type=${type}`)
+                .then(r => r.json())
+                .then(d => {
+                    showLoader(false);
+                    if (d.success) document.getElementById('queryEditor').value = d.content;
+                    else alert('Error al cargar: ' + d.error);
+                })
+                .catch(() => showLoader(false));
+        });
+
+        /* ── Ejecutar consulta ── */
+        document.getElementById('btnEjecutar').addEventListener('click', function () {
+            const qType = document.querySelector('input[name="queryType"]:checked').value;
+            const qText = document.getElementById('queryEditor').value.trim();
+            const engine = document.querySelector('input[name="xqueryEngine"]:checked')?.value || 'local';
+
+            if (!qText) { alert('Escribe una consulta primero.'); return; }
+
+            showLoader(true);
+            const out = document.getElementById('codeOutput');
+            out.classList.add('scanning');
+
+            fetch('/ejecutar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    xml_file: 'esquemas_hr.xml',
+                    query_type: qType,
+                    query_text: qText,
+                    engine,
+                    exist_url: document.getElementById('existUrl').value,
+                    exist_user: document.getElementById('existUser').value,
+                    exist_pass: document.getElementById('existPass').value
+                })
+            })
+                .then(r => r.json())
+                .then(d => {
+                    showLoader(false);
+                    setTimeout(() => out.classList.remove('scanning'), 4100);
+                    const pre = document.getElementById('resultPre');
+                    if (d.success) {
+                        lastXmlResult = d.result;
+                        pre.textContent = d.result;
+                        updateMeta(true, 'Completado', d.count, d.elapsed_ms);
+                        generarTablaAuto(d.result);
+                    } else {
+                        lastXmlResult = '';
+                        pre.textContent = 'ERROR:\n\n' + d.error;
+                        updateMeta(false, 'Fallo', 0, 0);
+                        document.getElementById('tableViewContainer').innerHTML =
+                            `<div style="color:var(--rose);padding:20px;font-family:var(--font-mono);font-size:.8rem;">Error en la consulta — ver pestaña Salida XML</div>`;
+                    }
+                })
+                .catch(err => {
+                    showLoader(false);
+                    out.classList.remove('scanning');
+                    document.getElementById('resultPre').textContent = 'ERROR DE RED:\n' + err;
+                    updateMeta(false, 'Error de red', 0, 0);
+                });
+        });
+
+        /* ── Validar ── */
+        document.getElementById('btnValidar').addEventListener('click', function () {
+            const banner = document.getElementById('utilBanner');
+            banner.className = 'alert';
+            showLoader(true);
+            fetch('/validar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ xml_file: 'esquemas_hr.xml' })
+            })
+                .then(r => r.json())
+                .then(d => {
+                    showLoader(false);
+                    banner.className = 'alert ' + (d.success ? 'ok' : 'err');
+                    banner.textContent = (d.success ? 'Exito: ' : 'Error: ') + (d.message || d.error);
+                })
+                .catch(err => {
+                    showLoader(false);
+                    banner.className = 'alert err';
+                    banner.textContent = 'Error de red: ' + err;
+                });
+        });
+
+        /* ── Estado y Acciones de Operaciones CRUD ── */
+        let currentCrudAction = 'insert';
+        let origFechaInicio = '';
+
+        function switchCrudAction(action) {
+            currentCrudAction = action;
+            
+            // Actualizar estilo de la pestaña activa
+            document.querySelectorAll('.crud-tab-btn').forEach(btn => btn.classList.remove('active'));
+            if (action === 'insert') document.getElementById('tabCrudInsert').classList.add('active');
+            else if (action === 'update') document.getElementById('tabCrudUpdate').classList.add('active');
+            else if (action === 'delete') document.getElementById('tabCrudDelete').classList.add('active');
+            
+            const entity = document.getElementById('entitySelect').value;
+            const recSel = document.getElementById('recordSelectorField');
+            const submitBtn = document.getElementById('btnInsertar');
+            
+            // Restablecer estilos personalizados del botón
+            submitBtn.style.backgroundColor = '';
+            submitBtn.style.color = '';
+            submitBtn.style.borderColor = '';
+            
+            if (action === 'insert') {
+                recSel.style.display = 'none';
+                document.querySelectorAll('.entity-form').forEach(f => f.classList.remove('active'));
+                document.getElementById(`form-${entity}`)?.classList.add('active');
+                submitBtn.style.display = 'inline-flex';
+                submitBtn.className = 'btn btn-cyan';
+                document.getElementById('insertBtnText').textContent = 'Registrar';
+                resetFormState(entity);
+            } else if (action === 'update') {
+                recSel.style.display = 'block';
+                document.getElementById('recordSelectorLabel').textContent = 'Seleccionar registro a modificar';
+                document.querySelectorAll('.entity-form').forEach(f => f.classList.remove('active'));
+                document.getElementById(`form-${entity}`)?.classList.add('active');
+                submitBtn.style.display = 'inline-flex';
+                submitBtn.className = 'btn btn-run';
+                document.getElementById('insertBtnText').textContent = 'Guardar Cambios';
+                populateRecordSelector(entity);
+                resetFormState(entity);
+            } else if (action === 'delete') {
+                recSel.style.display = 'block';
+                document.getElementById('recordSelectorLabel').textContent = 'Seleccionar registro a eliminar';
+                document.querySelectorAll('.entity-form').forEach(f => f.classList.remove('active'));
+                submitBtn.style.display = 'inline-flex';
+                submitBtn.className = 'btn btn-ghost';
+                submitBtn.style.backgroundColor = 'rgba(255, 77, 109, 0.1)';
+                submitBtn.style.color = 'var(--rose)';
+                submitBtn.style.borderColor = 'rgba(255, 77, 109, 0.3)';
+                document.getElementById('insertBtnText').textContent = 'Eliminar';
+                populateRecordSelector(entity);
+            }
+        }
+
+        function populateRecordSelector(entity) {
+            const select = document.getElementById('recordSelect');
+            select.innerHTML = '<option value="" disabled selected>— Seleccionar registro —</option>';
+            const list = dbLists[entity] || [];
+            list.forEach(item => {
+                const opt = document.createElement('option');
+                if (entity === 'historial_laboral') {
+                    opt.value = item.ref_empleado;
+                    opt.setAttribute('data-fecha-inicio', item.fecha_inicio);
+                    opt.textContent = item.label;
+                } else if (entity === 'pais' || entity === 'trabajo') {
+                    opt.value = item.id;
+                    opt.textContent = `${item.id} - ${item.nombre || item.titulo}`;
+                } else {
+                    opt.value = item.id;
+                    opt.textContent = `${item.id} - ${item.nombre}`;
+                }
+                select.appendChild(opt);
+            });
+        }
+
+        function onRecordSelectChange() {
+            if (currentCrudAction !== 'update') return;
+            const entity = document.getElementById('entitySelect').value;
+            const select = document.getElementById('recordSelect');
+            const id = select.value;
+            if (!id) return;
+            
+            let url = `/obtener_dato?entity=${entity}&id=${id}`;
+            if (entity === 'historial_laboral') {
+                const opt = select.options[select.selectedIndex];
+                const fecha_inicio = opt.getAttribute('data-fecha-inicio');
+                url += `&fecha_inicio=${fecha_inicio}`;
+            }
+            
+            showLoader(true);
+            fetch(url)
+                .then(r => r.json())
+                .then(d => {
+                    showLoader(false);
+                    if (d.success) {
+                        populateFormFields(entity, d.data);
+                    } else {
+                        alert('Error al cargar datos: ' + d.error);
+                    }
+                })
+                .catch(err => {
+                    showLoader(false);
+                    alert('Error de red: ' + err);
+                });
+        }
+
+        function populateFormFields(entity, data) {
+            const s = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val ?? '';
+            };
+            
+            const disableId = (id, disabled) => {
+                const el = document.getElementById(id);
+                if (el) el.disabled = disabled;
+            };
+            
+            disableId('insEmpId', true);
+            disableId('insRegionId', true);
+            disableId('insPaisId', true);
+            disableId('insUbicacionId', true);
+            disableId('insTrabajoId', true);
+            disableId('insDeptId', true);
+            disableId('insHistEmp', true);
+            disableId('insHistFIni', true);
+            
+            if (entity === 'empleado') {
+                s('insEmpId', data.id);
+                s('insEmpDpto', data.ref_departamento);
+                s('insEmpTrabajo', data.ref_trabajo);
+                s('insEmpNombre', data.nombre);
+                s('insEmpApellidos', data.apellidos);
+                s('insEmpEmail', data.email);
+                s('insEmpTel', data.telefono);
+                s('insEmpFecha', data.fecha_contratacion);
+                s('insEmpSalario', data.salario);
+                s('insEmpComision', data.porcentaje_comision);
+            } else if (entity === 'region') {
+                s('insRegionId', data.id);
+                s('insRegionNombre', data.nombre_region);
+            } else if (entity === 'pais') {
+                s('insPaisId', data.id);
+                s('insPaisNombre', data.nombre_pais);
+                s('insPaisRegion', data.ref_region);
+            } else if (entity === 'ubicacion') {
+                s('insUbicacionId', data.id);
+                s('insUbicacionCalle', data.direccion_calle);
+                s('insUbicacionCP', data.codigo_postal);
+                s('insUbicacionCiudad', data.ciudad);
+                s('insUbicacionProvincia', data.provincia_estado);
+                s('insUbicacionPais', data.ref_pais);
+            } else if (entity === 'trabajo') {
+                s('insTrabajoId', data.id);
+                s('insTrabajoTitulo', data.titulo_trabajo);
+                s('insTrabajoSalMin', data.salario_min);
+                s('insTrabajoSalMax', data.salario_max);
+            } else if (entity === 'departamento') {
+                s('insDeptId', data.id);
+                s('insDeptNombre', data.nombre_departamento);
+                s('insDeptGerente', data.id_gerente);
+                s('insDeptUbicacion', data.ref_ubicacion);
+            } else if (entity === 'historial_laboral') {
+                s('insHistEmp', data.ref_empleado);
+                s('insHistFIni', data.fecha_inicio);
+                s('insHistFFin', data.fecha_fin);
+                s('insHistTrabajo', data.ref_trabajo);
+                s('insHistDept', data.ref_departamento);
+                origFechaInicio = data.fecha_inicio;
+            }
+        }
+
+        function resetFormState(entity) {
+            const enableId = (id) => {
+                const el = document.getElementById(id);
+                if (el) el.disabled = false;
+            };
+            enableId('insEmpId');
+            enableId('insRegionId');
+            enableId('insPaisId');
+            enableId('insUbicacionId');
+            enableId('insTrabajoId');
+            enableId('insDeptId');
+            enableId('insHistEmp');
+            enableId('insHistFIni');
+            
+            if (currentCrudAction === 'insert') {
+                // Restaurar los siguientes IDs sugeridos
+                const nextEmp = document.getElementById('insEmpId');
+                if (nextEmp) nextEmp.value = "{{ next_emp_id }}";
+                const nextReg = document.getElementById('insRegionId');
+                if (nextReg) nextReg.value = "{{ next_region_id }}";
+                const nextUbic = document.getElementById('insUbicacionId');
+                if (nextUbic) nextUbic.value = "{{ next_ubicacion_id }}";
+                const nextDept = document.getElementById('insDeptId');
+                if (nextDept) nextDept.value = "{{ next_dept_id }}";
+                
+                // Limpiar campos de entrada
+                document.querySelectorAll('.entity-form input[type="text"], .entity-form input[type="number"], .entity-form input[type="email"]').forEach(inp => {
+                    // No limpiar los IDs por defecto auto-completados
+                    if (inp.id !== 'insEmpId' && inp.id !== 'insRegionId' && inp.id !== 'insUbicacionId' && inp.id !== 'insDeptId') {
+                        inp.value = '';
+                    }
+                });
+            }
+        }
+
+        /* ── Cambio de formulario de entidad ── */
+        function switchEntityForm() {
+            const entity = document.getElementById('entitySelect').value;
+            
+            if (currentCrudAction !== 'delete') {
+                document.querySelectorAll('.entity-form').forEach(f => f.classList.remove('active'));
+                document.getElementById(`form-${entity}`)?.classList.add('active');
+            } else {
+                document.querySelectorAll('.entity-form').forEach(f => f.classList.remove('active'));
+            }
+            
+            if (currentCrudAction !== 'insert') {
+                populateRecordSelector(entity);
+            }
+            
+            resetFormState(entity);
+            
+            const labels = {
+                empleado: 'Empleado', region: 'Región', pais: 'País', ubicacion: 'Ubicación',
+                trabajo: 'Trabajo', departamento: 'Departamento', historial_laboral: 'Historial Laboral'
+            };
+            
+            const submitBtn = document.getElementById('btnInsertar');
+            if (currentCrudAction === 'insert') {
+                document.getElementById('insertBtnText').textContent = 'Registrar ' + (labels[entity] || entity);
+            } else if (currentCrudAction === 'update') {
+                document.getElementById('insertBtnText').textContent = 'Guardar Cambios';
+            } else {
+                document.getElementById('insertBtnText').textContent = 'Eliminar';
+            }
+        }
+
+        /* ── Acción de Insertar / Actualizar / Eliminar ── */
+        document.getElementById('btnInsertar').addEventListener('click', function () {
+            const entity = document.getElementById('entitySelect').value;
+            const banner = document.getElementById('utilBanner');
+            banner.className = 'alert';
+            
+            const selectEl = document.getElementById('recordSelect');
+            const selectedId = selectEl.value;
+            
+            if (currentCrudAction !== 'insert' && !selectedId) {
+                alert('Por favor, selecciona un registro primero.');
+                return;
+            }
+            
+            if (currentCrudAction === 'delete') {
+                if (!confirm('¿Estás seguro de que deseas eliminar este registro?')) return;
+                
+                showLoader(true);
+                let payload = { entity, id: selectedId };
+                if (entity === 'historial_laboral') {
+                    const opt = selectEl.options[selectEl.selectedIndex];
+                    payload.fecha_inicio = opt.getAttribute('data-fecha-inicio');
+                }
+                
+                fetch('/eliminar_dato', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                })
+                    .then(r => r.json())
+                    .then(d => {
+                        showLoader(false);
+                        banner.className = 'alert ' + (d.success ? 'ok' : 'err');
+                        banner.textContent = (d.success ? 'Exito: ' : 'Error: ') + (d.message || d.error);
+                        if (d.success) setTimeout(() => location.reload(), 1500);
+                    })
+                    .catch(err => {
+                        showLoader(false);
+                        banner.className = 'alert err';
+                        banner.textContent = 'Error de red: ' + err;
+                    });
+                return;
+            }
+
+            const g = id => document.getElementById(id)?.value ?? '';
+            let payload = {};
+
+            if (entity === 'empleado')
+                payload = {
+                    id: g('insEmpId'), ref_departamento: g('insEmpDpto'), ref_trabajo: g('insEmpTrabajo'),
+                    nombre: g('insEmpNombre'), apellidos: g('insEmpApellidos'), email: g('insEmpEmail'),
+                    telefono: g('insEmpTel'), fecha_contratacion: g('insEmpFecha'),
+                    salario: g('insEmpSalario'), porcentaje_comision: g('insEmpComision')
+                };
+            else if (entity === 'region')
+                payload = { id: g('insRegionId'), nombre_region: g('insRegionNombre') };
+            else if (entity === 'pais')
+                payload = { id: g('insPaisId'), nombre_pais: g('insPaisNombre'), ref_region: g('insPaisRegion') };
+            else if (entity === 'ubicacion')
+                payload = {
+                    id: g('insUbicacionId'), direccion_calle: g('insUbicacionCalle'),
+                    codigo_postal: g('insUbicacionCP'), ciudad: g('insUbicacionCiudad'),
+                    provincia_estado: g('insUbicacionProvincia'), ref_pais: g('insUbicacionPais')
+                };
+            else if (entity === 'trabajo')
+                payload = {
+                    id: g('insTrabajoId'), titulo_trabajo: g('insTrabajoTitulo'),
+                    salario_min: g('insTrabajoSalMin'), salario_max: g('insTrabajoSalMax')
+                };
+            else if (entity === 'departamento')
+                payload = {
+                    id: g('insDeptId'), nombre_departamento: g('insDeptNombre'),
+                    id_gerente: g('insDeptGerente'), ref_ubicacion: g('insDeptUbicacion')
+                };
+            else if (entity === 'historial_laboral')
+                payload = {
+                    ref_empleado: g('insHistEmp'), fecha_inicio: g('insHistFIni'),
+                    fecha_fin: g('insHistFFin'), ref_trabajo: g('insHistTrabajo'),
+                    ref_departamento: g('insHistDept')
+                };
+
+            showLoader(true);
+            const url = currentCrudAction === 'insert' ? '/insertar_dato' : '/actualizar_dato';
+            
+            const requestBody = { entity, data: payload };
+            if (currentCrudAction === 'update') {
+                requestBody.id = selectedId;
+                if (entity === 'historial_laboral') {
+                    requestBody.fecha_inicio_orig = origFechaInicio;
+                }
+            }
+            
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
+            })
+                .then(r => r.json())
+                .then(d => {
+                    showLoader(false);
+                    banner.className = 'alert ' + (d.success ? 'ok' : 'err');
+                    banner.textContent = (d.success ? 'Exito: ' : 'Error: ') + (d.message || d.error);
+                    if (d.success) setTimeout(() => location.reload(), 1500);
+                })
+                .catch(err => {
+                    showLoader(false);
+                    banner.className = 'alert err';
+                    banner.textContent = 'Error de red: ' + err;
+                });
+        });
+
+        /* ── Cargar Base de Datos XML Completa ── */
+        function cargarXmlCompleto() {
+            const pre = document.getElementById('xmlCompletoPre');
+            pre.textContent = "Cargando base de datos XML...";
+            
+            fetch('/obtener_xml_completo')
+                .then(r => r.json())
+                .then(d => {
+                    if (d.success) {
+                        pre.textContent = d.content;
+                    } else {
+                        pre.textContent = "Error al cargar la base de datos XML:\n" + d.error;
+                    }
+                })
+                .catch(err => {
+                    pre.textContent = "Error de red al cargar la base de datos XML:\n" + err;
+                });
+        }
+
+        /* ── Tabla Automática ── */
+        function generarTablaAuto(xmlString) {
+            const container = document.getElementById('tableViewContainer');
+            const xsltSel = document.getElementById('xsltSelect');
+            if (xsltSel.value !== '') { aplicarXslt(xsltSel.value); return; }
+            if (!xmlString || xmlString.trim().startsWith('<!--')) {
+                container.innerHTML = `<div style="color:var(--txt-muted);padding:24px;text-align:center;font-family:var(--font-mono);font-size:.8rem;">Sin datos estructurados.</div>`;
+                return;
+            }
+            try {
+                const parser = new DOMParser();
+                const cleaned = xmlString.replace(/^<\?xml[^>]*\?>\s*/i, '');
+                const xmlDoc = parser.parseFromString(`<r>${cleaned}</r>`, 'text/xml');
+                if (xmlDoc.getElementsByTagName('parsererror').length) {
+                    container.innerHTML = `<div style="color:var(--txt-muted);padding:24px;text-align:center;font-family:var(--font-mono);font-size:.8rem;">Salida no tabular.</div>`;
+                    return;
+                }
+                const registros = xmlDoc.documentElement.children;
+                if (!registros.length) {
+                    container.innerHTML = `<div style="color:var(--txt-muted);padding:24px;text-align:center;">Sin resultados.</div>`;
+                    return;
+                }
+                const cols = new Set(); const rows = [];
+                for (const reg of registros) {
+                    const row = {};
+                    for (const a of reg.attributes) { cols.add(`@${a.name}`); row[`@${a.name}`] = a.value; }
+                    if (reg.children.length) {
+                        for (const ch of reg.children) { cols.add(ch.tagName); row[ch.tagName] = ch.textContent; }
+                    } else { cols.add('Valor'); row['Valor'] = reg.textContent; }
+                    rows.push(row);
+                }
+                const colArr = Array.from(cols);
+                let html = `<table><thead><tr>${colArr.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>`;
+                for (const row of rows) {
+                    html += `<tr>${colArr.map(c => {
+                        const v = row[c] ?? '';
+                        const m = c.toLowerCase().includes('salario');
+                        return `<td${m ? ' class="money"' : ''}>${esc(v)}</td>`;
+                    }).join('')}</tr>`;
+                }
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = `<div style="color:var(--rose);padding:20px;font-family:var(--font-mono);font-size:.8rem;">Error: ${e.message}</div>`;
+            }
+        }
+
+        function applyXsltChange() {
+            const f = document.getElementById('xsltSelect').value;
+            f ? aplicarXslt(f) : generarTablaAuto(lastXmlResult);
+        }
+
+        function aplicarXslt(xsltFile) {
+            const container = document.getElementById('tableViewContainer');
+            if (!lastXmlResult) {
+                container.innerHTML = `<div style="color:var(--txt-muted);padding:24px;text-align:center;font-family:var(--font-mono);font-size:.8rem;">Ejecuta una consulta primero.</div>`;
+                return;
+            }
+            showLoader(true);
+            fetch('/transformar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ xml_data: lastXmlResult, xslt_file: xsltFile })
+            })
+                .then(r => r.json())
+                .then(d => {
+                    showLoader(false);
+                    container.innerHTML = d.success ? d.result :
+                        `<div style="color:var(--rose);padding:20px;font-family:var(--font-mono);font-size:.8rem;">Error XSLT: ${d.error}</div>`;
+                })
+                .catch(err => { showLoader(false); container.innerHTML = `<div style="color:var(--rose);padding:20px;">Red: ${err}</div>`; });
+        }
+
+        function esc(t) {
+            return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+    </script>
+</body>
+
+</html>

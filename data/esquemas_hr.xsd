@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- ============================================================ -->
+  <!-- TIPOS REUTILIZABLES SIMPLES                                  -->
+  <!-- ============================================================ -->
+  <xs:simpleType name="TipoEmail">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[A-Z]{3,8}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- ============================================================ -->
+  <!-- ELEMENTO RAÍZ Y ESTRUCTURA GLOBAL                           -->
+  <!-- ============================================================ -->
+  <xs:element name="sistema_rh">
+    <xs:complexType>
+      <xs:sequence>
+        
+        <!-- REGIONES y PAÍSES -->
+        <xs:element name="regiones">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="region" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="paises">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="pais" maxOccurs="unbounded" minOccurs="0">
+                            <xs:complexType>
+                              <xs:attribute name="id" type="xs:string" use="required"/>
+                              <xs:attribute name="nombre_pais" type="xs:string" use="required"/>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="id" type="xs:integer" use="required"/>
+                  <xs:attribute name="nombre_region" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- UBICACIONES -->
+        <xs:element name="ubicaciones">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ubicacion" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="direccion_calle" type="xs:string"/>
+                    <xs:element name="codigo_postal" type="xs:string"/>
+                    <xs:element name="ciudad" type="xs:string"/>
+                    <xs:element name="provincia_estado" type="xs:string" minOccurs="0"/>
+                  </xs:sequence>
+                  <xs:attribute name="id" type="xs:integer" use="required"/>
+                  <xs:attribute name="ref_pais" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- TRABAJOS -->
+        <xs:element name="trabajos">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="trabajo" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="titulo_trabajo" type="xs:string"/>
+                    <xs:element name="salario_min" type="xs:decimal"/>
+                    <xs:element name="salario_max" type="xs:decimal"/>
+                  </xs:sequence>
+                  <xs:attribute name="id" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- DEPARTAMENTOS -->
+        <xs:element name="departamentos">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="departamento" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="nombre_departamento" type="xs:string"/>
+                    <xs:element name="id_gerente" type="xs:integer" minOccurs="0"/>
+                  </xs:sequence>
+                  <xs:attribute name="id" type="xs:integer" use="required"/>
+                  <xs:attribute name="ref_ubicacion" type="xs:integer" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- EMPLEADOS -->
+        <xs:element name="empleados">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="empleado" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="nombre" type="xs:string"/>
+                    <xs:element name="apellidos" type="xs:string"/>
+                    <xs:element name="email" type="TipoEmail"/>
+                    <xs:element name="telefono" type="xs:string"/>
+                    <xs:element name="fecha_contratacion" type="xs:date"/>
+                    <xs:element name="salario" type="xs:decimal"/>
+                    <xs:element name="porcentaje_comision" type="xs:decimal" minOccurs="0"/>
+                    <!-- 
+                      [PLACEHOLDER: AGREGAR NUEVOS CAMPOS AL USUARIO]
+                      Para añadir un nuevo campo al empleado (usuario), declarélo aquí abajo.
+                      Ejemplo: <xs:element name="edad" type="xs:integer" minOccurs="0"/>
+                    -->
+                  </xs:sequence>
+                  <xs:attribute name="id" type="xs:integer" use="required"/>
+                  <xs:attribute name="ref_departamento" type="xs:integer" use="required"/>
+                  <xs:attribute name="ref_trabajo" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <!-- HISTORIALES LABORALES -->
+        <xs:element name="historiales_laborales">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="historial_laboral" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="fecha_inicio" type="xs:date"/>
+                    <xs:element name="fecha_fin" type="xs:date"/>
+                    <xs:element name="ref_trabajo" type="xs:string"/>
+                    <xs:element name="ref_departamento" type="xs:integer"/>
+                  </xs:sequence>
+                  <xs:attribute name="ref_empleado" type="xs:integer" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

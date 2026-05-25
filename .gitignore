@@ -1,0 +1,14 @@
+# Entornos virtuales Python
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+
+# Archivos temporales o de SO
+.DS_Store
+Thumbs.db
+
+# Generados localmente para pruebas (opcional)
+data/esquemas_hr_grande.xml
+.venv_win/

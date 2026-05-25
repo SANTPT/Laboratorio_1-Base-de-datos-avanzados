@@ -1,0 +1,300 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<sistema_rh xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="esquemas_hr.xsd">
+  <!-- ============================================================ -->
+  <!--  REGIONES Y PAÍSES                                           -->
+  <!-- ============================================================ -->
+  <regiones>
+    <region id="1" nombre_region="Europa">
+      <paises>
+        <pais id="ES" nombre_pais="España"/>
+        <pais id="UK" nombre_pais="Reino Unido"/>
+        <pais id="FR" nombre_pais="Francia"/>
+        <pais id="DE" nombre_pais="Alemania"/>
+        <pais id="IT" nombre_pais="Italia"/>
+      </paises>
+    </region>
+    <region id="2" nombre_region="América del Sur">
+      <paises>
+        <pais id="AR" nombre_pais="Argentina"/>
+        <pais id="CO" nombre_pais="Colombia"/>
+      </paises>
+    </region>
+    <region id="3" nombre_region="América del Norte">
+      <paises>
+        <pais id="US" nombre_pais="Estados Unidos"/>
+        <pais id="MX" nombre_pais="México"/>
+      </paises>
+    </region>
+  <region id="5" nombre_region="Asia"><paises><pais id="JP" nombre_pais="Japón"/></paises></region></regiones>
+  <!-- ============================================================ -->
+  <!--  UBICACIONES (Oficinas y Sedes de la Compañía)              -->
+  <!-- ============================================================ -->
+  <ubicaciones>
+    <ubicacion id="1000" ref_pais="ES">
+      <direccion_calle>Calle Mayor 10</direccion_calle>
+      <codigo_postal>28001</codigo_postal>
+      <ciudad>Madrid</ciudad>
+      <provincia_estado>Madrid</provincia_estado>
+    </ubicacion>
+    <ubicacion id="1100" ref_pais="ES">
+      <direccion_calle>Avenida Diagonal 55</direccion_calle>
+      <codigo_postal>08019</codigo_postal>
+      <ciudad>Barcelona</ciudad>
+      <provincia_estado>Cataluña</provincia_estado>
+    </ubicacion>
+    <ubicacion id="1200" ref_pais="ES">
+      <direccion_calle>Gran Vía 33</direccion_calle>
+      <codigo_postal>48001</codigo_postal>
+      <ciudad>Bilbao</ciudad>
+      <provincia_estado>Vizcaya</provincia_estado>
+    </ubicacion>
+    <ubicacion id="1300" ref_pais="FR">
+      <direccion_calle>Rue de Rivoli 45</direccion_calle>
+      <codigo_postal>75001</codigo_postal>
+      <ciudad>París</ciudad>
+      <provincia_estado>Isla de Francia</provincia_estado>
+    </ubicacion>
+    <ubicacion id="1400" ref_pais="CO">
+      <direccion_calle>Carrera 7 No. 32-12</direccion_calle>
+      <codigo_postal>110311</codigo_postal>
+      <ciudad>Bogotá</ciudad>
+      <provincia_estado>Cundinamarca</provincia_estado>
+    </ubicacion>
+    <ubicacion id="1500" ref_pais="DE">
+      <direccion_calle>Friedrichstraße 95</direccion_calle>
+      <codigo_postal>10117</codigo_postal>
+      <ciudad>Berlín</ciudad>
+      <provincia_estado>Berlín</provincia_estado>
+    </ubicacion>
+    <ubicacion id="1600" ref_pais="IT">
+      <direccion_calle>Via del Corso 240</direccion_calle>
+      <codigo_postal>00186</codigo_postal>
+      <ciudad>Roma</ciudad>
+      <provincia_estado>Lacio</provincia_estado>
+    </ubicacion>
+    <ubicacion id="1700" ref_pais="US">
+      <direccion_calle>100 Pine Street</direccion_calle>
+      <codigo_postal>94111</codigo_postal>
+      <ciudad>San Francisco</ciudad>
+      <provincia_estado>California</provincia_estado>
+    </ubicacion>
+  </ubicaciones>
+  <!-- ============================================================ -->
+  <!--  TRABAJOS (Puestos, Roles y Escalas de Salario)             -->
+  <!-- ============================================================ -->
+  <trabajos>
+    <trabajo id="IT_PROG">
+      <titulo_trabajo>Programador</titulo_trabajo>
+      <salario_min>4000.00</salario_min>
+      <salario_max>10000.00</salario_max>
+    </trabajo>
+    <trabajo id="SA_REP">
+      <titulo_trabajo>Representante de Ventas</titulo_trabajo>
+      <salario_min>6000.00</salario_min>
+      <salario_max>12000.00</salario_max>
+    </trabajo>
+    <trabajo id="ST_CLERK">
+      <titulo_trabajo>Auxiliar de Almacén</titulo_trabajo>
+      <salario_min>2000.00</salario_min>
+      <salario_max>5000.00</salario_max>
+    </trabajo>
+    <trabajo id="SEC_ANALT">
+      <titulo_trabajo>Analista de Ciberseguridad</titulo_trabajo>
+      <salario_min>5500.00</salario_min>
+      <salario_max>11500.00</salario_max>
+    </trabajo>
+    <trabajo id="SYS_ADMIN">
+      <titulo_trabajo>Administrador de Sistemas</titulo_trabajo>
+      <salario_min>4500.00</salario_min>
+      <salario_max>9500.00</salario_max>
+    </trabajo>
+    <trabajo id="HR_SPEC">
+      <titulo_trabajo>Especialista en RRHH</titulo_trabajo>
+      <salario_min>3500.00</salario_min>
+      <salario_max>7500.00</salario_max>
+    </trabajo>
+    <trabajo id="DBA_ENG">
+      <titulo_trabajo>Administrador de Bases de Datos</titulo_trabajo>
+      <salario_min>5000.00</salario_min>
+      <salario_max>11000.00</salario_max>
+    </trabajo>
+  <trabajo id="DBA_SR"><titulo_trabajo>DBA Senior</titulo_trabajo><salario_min>6000.00</salario_min><salario_max>12000.00</salario_max></trabajo></trabajos>
+  <!-- ============================================================ -->
+  <!--  DEPARTAMENTOS                                               -->
+  <!-- ============================================================ -->
+  <departamentos>
+    <departamento id="10" ref_ubicacion="1700">
+      <nombre_departamento>Recursos Humanos</nombre_departamento>
+      <id_gerente>108</id_gerente>
+    </departamento>
+    <departamento id="50" ref_ubicacion="1200">
+      <nombre_departamento>Envíos y Logística</nombre_departamento>
+      <id_gerente>104</id_gerente>
+    </departamento>
+    <departamento id="60" ref_ubicacion="1000">
+      <nombre_departamento>Desarrollo TI</nombre_departamento>
+      <id_gerente>101</id_gerente>
+    </departamento>
+    <departamento id="70" ref_ubicacion="1300">
+      <nombre_departamento>Ciberseguridad y Redes</nombre_departamento>
+      <id_gerente>105</id_gerente>
+    </departamento>
+    <departamento id="80" ref_ubicacion="1100">
+      <nombre_departamento>Ventas Sur de Europa</nombre_departamento>
+      <id_gerente>102</id_gerente>
+    </departamento>
+    <departamento id="90" ref_ubicacion="1400">
+      <nombre_departamento>Operaciones Latam</nombre_departamento>
+      <id_gerente>107</id_gerente>
+    </departamento>
+    <departamento id="100" ref_ubicacion="1500">
+      <nombre_departamento>Infraestructura Global</nombre_departamento>
+      <id_gerente>111</id_gerente>
+    </departamento>
+  </departamentos>
+  <!-- ============================================================ -->
+  <!--  EMPLEADOS                                                   -->
+  <!-- ============================================================ -->
+  <empleados>
+    <empleado id="101" ref_departamento="60" ref_trabajo="IT_PROG">
+      <nombre>Ana</nombre>
+      <apellidos>García López</apellidos>
+      <email>AGARCIA</email>
+      <telefono>515.123.4567</telefono>
+      <fecha_contratacion>2023-01-15</fecha_contratacion>
+      <salario>8000.00</salario>
+      <!-- 
+        [PLACEHOLDER: AGREGAR NUEVOS CAMPOS AL USUARIO]
+        Para añadir un nuevo campo a este empleado (usuario):
+        1. Declárelo primero en 'data/esquemas_hr.xsd' bajo la secuencia de 'empleado'.
+        2. Añada el valor aquí abajo respetando el orden. Ejemplo: <edad>30</edad>
+      -->
+    </empleado>
+    <empleado id="102" ref_departamento="80" ref_trabajo="SA_REP">
+      <nombre>Carlos</nombre>
+      <apellidos>Ruiz Martínez</apellidos>
+      <email>CRUIZ</email>
+      <telefono>515.123.4568</telefono>
+      <fecha_contratacion>2023-03-22</fecha_contratacion>
+      <salario>9500.00</salario>
+      <porcentaje_comision>0.15</porcentaje_comision>
+    </empleado>
+    <empleado id="103" ref_departamento="80" ref_trabajo="SA_REP">
+      <nombre>María</nombre>
+      <apellidos>Fernández Soto</apellidos>
+      <email>MFERNAND</email>
+      <telefono>515.123.4569</telefono>
+      <fecha_contratacion>2023-06-10</fecha_contratacion>
+      <salario>6500.00</salario>
+      <porcentaje_comision>0.10</porcentaje_comision>
+    </empleado>
+    <empleado id="104" ref_departamento="50" ref_trabajo="ST_CLERK">
+      <nombre>Pedro</nombre>
+      <apellidos>Sánchez Vidal</apellidos>
+      <email>PSANCHEZ</email>
+      <telefono>515.123.4570</telefono>
+      <fecha_contratacion>2023-09-05</fecha_contratacion>
+      <salario>3500.00</salario>
+    </empleado>
+    <empleado id="105" ref_departamento="70" ref_trabajo="SEC_ANALT">
+      <nombre>Laura</nombre>
+      <apellidos>Martín Castro</apellidos>
+      <email>LMARTIN</email>
+      <telefono>515.123.9988</telefono>
+      <fecha_contratacion>2024-02-10</fecha_contratacion>
+      <salario>7200.00</salario>
+    </empleado>
+    <empleado id="106" ref_departamento="70" ref_trabajo="SYS_ADMIN">
+      <nombre>Javier</nombre>
+      <apellidos>Ortiz Susaeta</apellidos>
+      <email>JORTIZ</email>
+      <telefono>515.123.9989</telefono>
+      <fecha_contratacion>2024-05-18</fecha_contratacion>
+      <salario>5800.00</salario>
+    </empleado>
+    <empleado id="107" ref_departamento="90" ref_trabajo="SYS_ADMIN">
+      <nombre>Diana</nombre>
+      <apellidos>Gómez Restrepo</apellidos>
+      <email>DGOMEZ</email>
+      <telefono>571.555.0122</telefono>
+      <fecha_contratacion>2025-01-10</fecha_contratacion>
+      <salario>6000.00</salario>
+    </empleado>
+    <empleado id="108" ref_departamento="10" ref_trabajo="HR_SPEC">
+      <nombre>Sonia</nombre>
+      <apellidos>Vázquez Montero</apellidos>
+      <email>SVAZQUEZ</email>
+      <telefono>415.555.0190</telefono>
+      <fecha_contratacion>2022-11-01</fecha_contratacion>
+      <salario>5200.00</salario>
+    </empleado>
+    <empleado id="109" ref_departamento="60" ref_trabajo="DBA_ENG">
+      <nombre>Alejandro</nombre>
+      <apellidos>Mendoza Pardo</apellidos>
+      <email>AMENDOZA</email>
+      <telefono>515.123.7711</telefono>
+      <fecha_contratacion>2024-08-25</fecha_contratacion>
+      <salario>7800.00</salario>
+    </empleado>
+    <empleado id="110" ref_departamento="80" ref_trabajo="SA_REP">
+      <nombre>Elena</nombre>
+      <apellidos>Ferrari Pastor</apellidos>
+      <email>EFERRARI</email>
+      <telefono>39.06.55541</telefono>
+      <fecha_contratacion>2025-03-14</fecha_contratacion>
+      <salario>6200.00</salario>
+      <porcentaje_comision>0.12</porcentaje_comision>
+    </empleado>
+    <empleado id="111" ref_departamento="100" ref_trabajo="SYS_ADMIN">
+      <nombre>Helmut</nombre>
+      <apellidos>Schneider Kraft</apellidos>
+      <email>HSCHNEID</email>
+      <telefono>49.30.55522</telefono>
+      <fecha_contratacion>2021-06-01</fecha_contratacion>
+      <salario>8900.00</salario>
+    </empleado>
+    <empleado id="112" ref_departamento="70" ref_trabajo="SEC_ANALT">
+      <nombre>Diego</nombre>
+      <apellidos>Torres Alarcón</apellidos>
+      <email>DTORRES</email>
+      <telefono>515.123.9990</telefono>
+      <fecha_contratacion>2025-10-05</fecha_contratacion>
+      <salario>6100.00</salario>
+    </empleado>
+  <empleado id="113" ref_departamento="100" ref_trabajo="HR_SPEC"><nombre>Lorena</nombre><apellidos>Guzmán</apellidos><email>BIWCYWK</email><telefono>663.343.8595</telefono><fecha_contratacion>2016-10-04</fecha_contratacion><salario>6862.63</salario></empleado><empleado id="114" ref_departamento="90" ref_trabajo="SEC_ANALT"><nombre>Eva María</nombre><apellidos>Mas</apellidos><email>MRSQKCS</email><telefono>854.538.8765</telefono><fecha_contratacion>2024-05-09</fecha_contratacion><salario>4804.31</salario></empleado><empleado id="115" ref_departamento="70" ref_trabajo="HR_SPEC"><nombre>Guadalupe</nombre><apellidos>Rocha</apellidos><email>BWCWK</email><telefono>547.523.7351</telefono><fecha_contratacion>2018-07-22</fecha_contratacion><salario>3771.79</salario></empleado><empleado id="116" ref_departamento="10" ref_trabajo="HR_SPEC"><nombre>Raquel</nombre><apellidos>Raya</apellidos><email>SIGLOBHV</email><telefono>745.246.8862</telefono><fecha_contratacion>2020-06-08</fecha_contratacion><salario>2909.58</salario></empleado><empleado id="117" ref_departamento="80" ref_trabajo="SA_REP"><nombre>Domingo</nombre><apellidos>Múgica</apellidos><email>XVRKZUS</email><telefono>198.456.9042</telefono><fecha_contratacion>2020-09-26</fecha_contratacion><salario>6787.21</salario></empleado><empleado id="118" ref_departamento="100" ref_trabajo="DBA_ENG"><nombre>Natanael</nombre><apellidos>Peiró</apellidos><email>NTOYP</email><telefono>489.667.3122</telefono><fecha_contratacion>2020-06-16</fecha_contratacion><salario>7393.13</salario></empleado><empleado id="119" ref_departamento="60" ref_trabajo="HR_SPEC"><nombre>Soraya</nombre><apellidos>Conesa</apellidos><email>YJMER</email><telefono>435.451.6953</telefono><fecha_contratacion>2017-06-12</fecha_contratacion><salario>3030.05</salario></empleado><empleado id="120" ref_departamento="90" ref_trabajo="IT_PROG"><nombre>Pepita</nombre><apellidos>Hernandez</apellidos><email>MMFJLT</email><telefono>532.798.5697</telefono><fecha_contratacion>2019-03-03</fecha_contratacion><salario>8276.52</salario></empleado><empleado id="121" ref_departamento="80" ref_trabajo="SEC_ANALT"><nombre>Sara</nombre><apellidos>Collado</apellidos><email>IBCNTBNP</email><telefono>598.648.1086</telefono><fecha_contratacion>2025-05-10</fecha_contratacion><salario>12135.07</salario></empleado><empleado id="122" ref_departamento="70" ref_trabajo="DBA_ENG"><nombre>Tamara</nombre><apellidos>Tapia</apellidos><email>DBGSAK</email><telefono>405.721.7606</telefono><fecha_contratacion>2019-10-15</fecha_contratacion><salario>11168.73</salario></empleado><empleado id="123" ref_departamento="10" ref_trabajo="IT_PROG"><nombre>migue</nombre><apellidos>gacira</apellidos><email>AAAA</email><telefono>444</telefono><fecha_contratacion>2026-05-24</fecha_contratacion><salario>333</salario></empleado></empleados>
+  <!-- ============================================================ -->
+  <!--  HISTORIAL LABORAL                                           -->
+  <!-- ============================================================ -->
+  <historiales_laborales>
+    <historial_laboral ref_empleado="101">
+      <fecha_inicio>2021-01-01</fecha_inicio>
+      <fecha_fin>2022-12-31</fecha_fin>
+      <ref_trabajo>ST_CLERK</ref_trabajo>
+      <ref_departamento>50</ref_departamento>
+    </historial_laboral>
+    <historial_laboral ref_empleado="102">
+      <fecha_inicio>2022-05-10</fecha_inicio>
+      <fecha_fin>2023-03-21</fecha_fin>
+      <ref_trabajo>ST_CLERK</ref_trabajo>
+      <ref_departamento>50</ref_departamento>
+    </historial_laboral>
+    <historial_laboral ref_empleado="105">
+      <fecha_inicio>2023-03-01</fecha_inicio>
+      <fecha_fin>2024-02-09</fecha_fin>
+      <ref_trabajo>IT_PROG</ref_trabajo>
+      <ref_departamento>60</ref_departamento>
+    </historial_laboral>
+    <historial_laboral ref_empleado="109">
+      <fecha_inicio>2022-01-15</fecha_inicio>
+      <fecha_fin>2024-08-24</fecha_fin>
+      <ref_trabajo>IT_PROG</ref_trabajo>
+      <ref_departamento>60</ref_departamento>
+    </historial_laboral>
+    <historial_laboral ref_empleado="112">
+      <fecha_inicio>2024-02-01</fecha_inicio>
+      <fecha_fin>2025-10-04</fecha_fin>
+      <ref_trabajo>SYS_ADMIN</ref_trabajo>
+      <ref_departamento>100</ref_departamento>
+    </historial_laboral>
+  </historiales_laborales>
+</sistema_rh>
